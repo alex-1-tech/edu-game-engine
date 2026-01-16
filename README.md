@@ -1,27 +1,23 @@
-# EDU Game Engine 🎮
+# EduGame Engine 
 
-A learning-oriented game engine designed for **educational use and rapid prototyping**. Focuses on **developer efficiency, clean architecture, and educational value**.
+A specialized open-source game engine designed exclusively for creating games that teach programming.
 
-## 🎯 Vision
+Unlike traditional engines (Unity, Godot, Unreal), EduGame Engine treats **code as gameplay**: user code is analyzed, visualized, constrained, and explained in real time. The engine makes programming concepts visible, debuggable, and interactive through game mechanics.
 
-This is an **educational game engine** built to:
-- **Teach** game engine architecture concepts
-- **Enable** rapid prototyping for indie developers
-- **Demonstrate** modern C++ best practices
-- **Provide** a clean, hackable codebase for learning
+The project targets education, self-learning, and teaching environments with a high-performance C++ core and a Python-based learning and scripting layer.
 
-## 🏗️ Architecture
+## Vision
 
-- **Language:** Modern C++ (C++20)
-- **Core Pattern:** Entity Component System (ECS)
-- **Key Features:**
-  - Clean, modular architecture
-  - Data-oriented design principles
-  - Cross-platform support (Linux, Windows)
-  - Minimal dependencies
-  - Educational focus with extensive documentation
+EduGame Engine exists to teach **how programmers think**, not just how to write syntax. Code is not just executed — it's *observed*, *measured*, and *explained*.
 
-## 📚 Documentation
+## Architecture
+
+- **Core:** C++20 (deterministic, performance-critical systems)
+- **Learning Runtime:** Python 3.11+ (code analysis, visualization, teaching)
+- **Design Principles:** Explicit over implicit, determinism, observability
+- **Key Feature:** Learning Runtime that intercepts and explains code execution
+
+## Documentation
 
 - [Vision & Philosophy](docs/vision.md) - Why this project exists
 - [Architecture Overview](docs/architecture.md) - Technical design
@@ -29,20 +25,18 @@ This is an **educational game engine** built to:
 - [Onboarding Guide](docs/onboarding.md) - How to get started
 - [Coding Standards](docs/coding-style.md) - C++/Python style guide
 - [Git Workflow](docs/git-workflow.md) - Collaboration rules
-## 🚀 Quick Start
 
-```bash
-# Clone the repository
-git clone git@github.com:alex-1-tech/edu-game-engine.git
-cd edu-game-engine
-```
-## 🤝 Contributing
+## Quick Start
 
-We welcome contributions from developers of all skill levels! Please read:
+*Setup instructions coming soon in v0.1.0*
 
+## Contributing
+
+We welcome contributors! Please read:
 - [Onboarding Guide](docs/onboarding.md) for setup instructions
 - [Git Workflow](docs/git-workflow.md) for collaboration rules
-- [Coding Standards](docs/coding-style.md)  for code style
-## 📄 License
+- Create an issue before starting significant work
+
+## License
 
 MIT License - See [LICENSE](LICENSE) file for details.
