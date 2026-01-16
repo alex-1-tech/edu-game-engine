@@ -1,38 +1,48 @@
-# EDU Game Engine 
+# EDU Game Engine 🎮
 
-A learning-oriented game engine. Focuses on **developer efficiency** rather.
+A learning-oriented game engine designed for **educational use and rapid prototyping**. Focuses on **developer efficiency, clean architecture, and educational value**.
 
-## Vision
+## 🎯 Vision
 
-This engine isn't another Unity/Unreal competitor. It's a **tool for rapid prototyping**. The core idea is a **Learning Runtime** — a system that observes how developers work and learns to suggest optimizations, predict bugs, and automate repetitive tasks.
+This is an **educational game engine** built to:
+- **Teach** game engine architecture concepts
+- **Enable** rapid prototyping for indie developers
+- **Demonstrate** modern C++ best practices
+- **Provide** a clean, hackable codebase for learning
 
-## Architecture
+## 🏗️ Architecture
 
 - **Language:** Modern C++ (C++20)
 - **Core Pattern:** Entity Component System (ECS)
-- **Key Components:**
-  - **Runtime:** Standard game engine (rendering, physics, audio)
-  - **Learning Runtime:** AI layer that analyzes development patterns
-  - **Editor:** Tool for both human and AI-assisted development
+- **Key Features:**
+  - Clean, modular architecture
+  - Data-oriented design principles
+  - Cross-platform support (Linux, Windows)
+  - Minimal dependencies
+  - Educational focus with extensive documentation
 
-## Documentation
+## 📚 Documentation
 
-- [Vision & Philosophy](docs/vision.md)
-- [Architecture Overview](docs/architecture.md)
-- [Coding Standards](docs/coding-style.md)
-- [Git Workflow](docs/git-workflow.md)
+- [Vision & Philosophy](docs/vision.md) - Why this project exists
+- [Architecture Overview](docs/architecture.md) - Technical design
+- [Development Roadmap](docs/roadmap.md) - 3/6/12 month plan
+- [Onboarding Guide](docs/onboarding.md) - How to get started
+- [Coding Standards](docs/coding-style.md) - C++/Python style guide
+- [Git Workflow](docs/git-workflow.md) - Collaboration rules
+## 🚀 Quick Start
 
-## Getting Started
+```bash
+# Clone the repository
+git clone git@github.com:alex-1-tech/edu-game-engine.git
+cd edu-game-engine
+```
+## 🤝 Contributing
 
-*Coming soon: Initial setup guide*
+We welcome contributions from developers of all skill levels! Please read:
 
-## Contributing
-
-We welcome contributors! Please read:
-- [Git Workflow](docs/git-workflow.md) for branch/commit rules
-- [Coding Standards](docs/coding-style.md) for code style
-- Create an issue before starting significant work
-
+- [Onboarding Guide](docs/onboarding.md) for setup instructions
+- [Git Workflow](docs/git-workflow.md) for collaboration rules
+- [Coding Standards](docs/coding-style.md)  for code style
 ## 📄 License
 
-MIT License
+MIT License - See [LICENSE](LICENSE) file for details.
