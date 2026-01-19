@@ -6,9 +6,9 @@ This document defines the coding standards and style guidelines for the EduGame 
 ## Language Standards
 
 ### C++ Standard
-- **Primary:** C++20
+- **Primary:** C++17
 - **Minimum:** Must compile with GCC 11+, Clang 14+, MSVC 2019+
-- **Allowed:** C++20 features that are widely supported across all target platforms
+- **Allowed:** C++17 features that are widely supported across all target platforms
 
 ### Python Standard
 - **Primary:** Python 3.11+
@@ -25,6 +25,9 @@ We will adopt a **modified Linux Kernel style** with adjustments for educational
 - **Line length:** 100 characters maximum
 - **Braces:** K&R style with educational considerations
 - **Naming:** Descriptive, clear names prioritizing readability over brevity
+
+**For header:** Doxygen
+- **Style:** Doxygen-style comments for all C++ headers (.h, .hpp files)
 
 **Enforcement Tools:**
 - `.clang-format` configuration file
@@ -62,6 +65,7 @@ We follow **strict Python conventions** with `ruff` enforcement:
 - [Linux Kernel Coding Style](https://www.kernel.org/doc/html/v4.10/process/coding-style.html)
 - [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)
 - [clang-format documentation](https://clang.llvm.org/docs/ClangFormat.html)
+- [Doxygen documentation](https://www.geeksforgeeks.org/cpp/doxygen-cpp-documentation/)
 
 ### Python References
 - [PEP 8 — Style Guide for Python Code](https://peps.python.org/pep-0008/)

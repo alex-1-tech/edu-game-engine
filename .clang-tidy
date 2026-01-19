@@ -1,0 +1,36 @@
+Checks: >
+  bugprone-*,
+  clang-analyzer-core*,
+  modernize-*,
+  -modernize-use-trailing-return-type,
+  performance-*,
+  -performance-enum-size,
+  portability-*,
+  readability-*,
+  -readability-magic-numbers,
+  -readability-identifier-length,
+  -readability-function-cognitive-complexity
+  
+WarningsAsErrors: 'bugprone-*,clang-analyzer-core*'
+HeaderFilterRegex: '(engine/.*)|(editor/.*)|(tests/cpp/.*)'
+FormatStyle: none
+AnalyzeTemporaryDtors: false
+CheckOptions:
+  - key: modernize-pass-by-value.IncludeStyle
+    value: llvm
+  - key: modernize-use-nodiscard.IgnoreMacros
+    value: 1
+  - key: readability-identifier-length.MinimumVariableNameLength
+    value: 2
+  - key: readability-function-size.ClassThreshold
+    value: 300
+  - key: readability-function-size.StructThreshold
+    value: 200
+  - key: readability-function-size.StatementThreshold
+    value: 80
+  - key: bugprone-easily-swappable-parameters.MaximumParameters
+    value: 5
+  - key: bugprone-easily-swappable-parameters.MinimumLength
+    value: 3
+  - key: bugprone-suspicious-missing-comma.MaxConcatenatedTokens
+    value: 5

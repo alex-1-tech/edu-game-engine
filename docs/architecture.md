@@ -107,6 +107,14 @@ edu-game-engine/
 └── CMakeLists.txt                 # Root CMake configuration
 ```
 
+## Include layout
+Public headers follow the pattern:
+`engine/core/include/engine/core/...`
+
+**This allows:**
+- Clean include paths (`#include <engine/core/base.hpp>`)
+- Correct installation and export via CMake
+- Future multi-module expansion
 ## Core Modules Description
 
 ### 1. Core (`engine/core/`)
@@ -253,7 +261,7 @@ CMakeLists.txt (root)
 ### Dependencies
 
 #### Required
-- **C++20** compatible compiler (GCC 11+, Clang 14+, MSVC 2019+)
+- **C++17** compatible compiler (GCC 11+, Clang 14+, MSVC 2019+)
 - **Python 3.11+** with development headers
 - **CMake 3.20+**
 #### Core Dependencies
@@ -267,7 +275,7 @@ CMakeLists.txt (root)
 ## Platform Support
 
 ### Primary Development Platform
-- **Linux** (Ubuntu 22.04+, GCC/Clang)
+- **Linux** (Ubuntu 22.04+, OpenSuse 16.0+, GCC/Clang)
 ### Secondary Platforms
 - **Windows** (via MSVC or MinGW)
 ### Web/Educational Consideration

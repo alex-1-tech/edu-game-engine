@@ -42,3 +42,10 @@
 
 # obsidian
 .obsidian/
+
+# c++
+build/
+.cache
+
+# vscode
+.vscode/
