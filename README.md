@@ -1,21 +1,16 @@
 # EduGame Engine 
 
-A specialized open-source game engine designed exclusively for creating games that teach programming.
-
-Unlike traditional engines (Unity, Godot, Unreal), EduGame Engine treats **code as gameplay**: user code is analyzed, visualized, constrained, and explained in real time. The engine makes programming concepts visible, debuggable, and interactive through game mechanics.
-
-The project targets education, self-learning, and teaching environments with a high-performance C++ core and a Python-based learning and scripting layer.
+The Educational Game Engine is a full-featured game development platform specialized for creating programming education games. It provides tools to build engaging games where players learn to code by solving interactive challenges within gameplay.
 
 ## Vision
 
-EduGame Engine exists to teach **how programmers think**, not just how to write syntax. Code is not just executed — it's *observed*, *measured*, and *explained*.
+*coming soon*
 
 ## Architecture
 
-- **Core:** C++20 (deterministic, performance-critical systems)
+- **Core:** C++17 (deterministic, performance-critical systems)
 - **Learning Runtime:** Python 3.11+ (code analysis, visualization, teaching)
 - **Design Principles:** Explicit over implicit, determinism, observability
-- **Key Feature:** Learning Runtime that intercepts and explains code execution
 
 ## Documentation
 
@@ -28,7 +23,7 @@ EduGame Engine exists to teach **how programmers think**, not just how to write 
 
 ## Quick Start
 
-*Setup instructions coming soon in v0.1.0*
+*Setup instructions coming soon*
 
 ## Contributing
 

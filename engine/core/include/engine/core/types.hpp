@@ -44,21 +44,16 @@ using String = std::string;          ///< Mutable string type
 using StringView = std::string_view; ///< Immutable string view type
 
 // Smart pointers
-template <typename T>
-using Ref = std::shared_ptr<T>; ///< Shared ownership smart pointer
-template <typename T>
-using WeakRef = std::weak_ptr<T>; ///< Non-owning reference to shared_ptr
-template <typename T>
-using Unique = std::unique_ptr<T>; ///< Exclusive ownership smart pointer
+template<typename T> using Ref = std::shared_ptr<T>;    ///< Shared ownership smart pointer
+template<typename T> using WeakRef = std::weak_ptr<T>;  ///< Non-owning reference to shared_ptr
+template<typename T> using Unique = std::unique_ptr<T>; ///< Exclusive ownership smart pointer
 
 // Function types
-template <typename Signature>
-using Function = std::function<Signature>; ///< Generic function wrapper
+template<typename Signature> using Function = std::function<Signature>; ///< Generic function wrapper
 
 // Result type for error handling
-template <typename T, typename E = String>
-using Result = std::variant<T, E>; ///< Result type for error handling (T =
-                                   ///< success, E = error)
+template<typename T, typename E = String>
+using Result = std::variant<T, E>; ///< Result type for error handling (T = success, E = error)
 
 // ID types
 using EntityId = u32;        ///< Entity identifier type

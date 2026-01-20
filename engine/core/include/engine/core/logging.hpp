@@ -1,85 +1,108 @@
 #pragma once
 
 /**
- * @file    logger.hpp
+ * @file    logging.hpp
  * @brief   Logging system for the engine
  * @author  alex-1-tech
  * @date    2026
  */
 
-#include "base.hpp"
-#include "types.hpp"
 #include <fmt/core.h>
 #include <fmt/format.h>
+
 #include <fstream>
 #include <mutex>
+
+#include "base.hpp"
+#include "types.hpp"
 
 EGE_NAMESPACE_BEGIN
 
 /// @brief Log severity levels
 enum class LogLevel : u8 {
-  Trace = 0, ///< Detailed tracing information
-  Debug,     ///< Debug information
-  Info,      ///< General information
-  Warning,   ///< Warning messages
-  Error,     ///< Error messages
-  Critical   ///< Critical errors
+  TRACE = 0, ///< Detailed tracing information
+  DEBUG,     ///< Debug information
+  INFO,      ///< General information
+  WARNING,   ///< Warning messages
+  ERROR,     ///< Error messages
+  CRITICAL   ///< Critical errors
 };
 
 /// @brief Thread-safe logging system
-class Logger {
+class Logger
+{
 public:
-  static void
-  init(const String &log_file = "engine.log"); ///< Initialize the logger
-  static void shutdown();                      ///< Shutdown the logger
+  /**
+   * @brief Initialize the logger
+   * @param log_file Path to the log file (default: "engine.log")
+   */
+  static void init(const String& log_file = "engine.log");
 
-  /// @brief Log a formatted message
-  template <typename... Args>
-  static void log(LogLevel level, const char *format, Args &&...args) {
-    std::scoped_lock lock(get_mutex());
+  static void shutdown(); ///< Shutdown the logger and close file streams
+
+  /**
+   * @brief Log a formatted message
+   * @tparam Args Format arguments type
+   * @param level Log severity level
+   * @param format Format string
+   * @param args Format arguments
+   */
+  template<typename... Args> static void log(LogLevel level, const char* format, Args&&... args)
+  {
+    std::scoped_lock lock(getMutex());
     auto message = fmt::format(format, std::forward<Args>(args)...);
-    log_internal(level, message);
+    logInternal(level, message);
   }
 
-  static void set_level(LogLevel level); ///< Set minimum log level
-  static void
-  enable_file_output(bool enable); ///< Enable or disable file output
+  /**
+   * @brief Set minimum log level
+   * @param level Minimum level to log
+   */
+  static void setLevel(LogLevel level);
+
+  /**
+   * @brief Enable or disable file output
+   * @param enable True to enable file output, false to disable
+   */
+  static void enableFileOutput(bool enable);
 
 private:
-  static void
-  log_internal(LogLevel level,
-               const String &message); //< Internal logging implementation
+  /**
+   * @brief Get the file stream instance
+   * @return Reference to the file stream
+   */
+  static auto getFileStream() -> std::ofstream&;
 
-  static std::mutex &get_mutex(); ///< Get the mutex instance
+  /**
+   * @brief Internal logging implementation
+   * @param level Log severity level
+   * @param message Formatted message
+   */
+  static void logInternal(LogLevel level, const String& message);
 
-  static LogLevel s_level;            ///< Current log level
-  static std::ofstream s_file_stream; ///< Log file stream
-  static bool s_file_enabled;         ///< File output enabled flag
-  static std::mutex s_mutex;          ///< Thread safety mutex
+  /**
+   * @brief Get the mutex instance for thread safety
+   * @return Reference to the mutex
+   */
+  static auto getMutex() -> std::mutex&;
+
+  static LogLevel s_level;                             ///< Current log level
+  static std::unique_ptr<std::ofstream> s_file_stream; ///< Log file stream
+  static bool s_file_enabled;                          ///< File output enabled flag
+  static std::mutex s_mutex;                           ///< Thread safety mutex
 };
 
 // Convenience logging macros
-#define EGE_TRACE(...)                                                         \
-  engine::Logger::log(engine::LogLevel::Trace, __VA_ARGS__) ///< Trace-level log
-#define EGE_DEBUG(...)                                                         \
-  engine::Logger::log(engine::LogLevel::Debug, __VA_ARGS__) ///< Debug-level log
-#define EGE_INFO(...)                                                          \
-  engine::Logger::log(engine::LogLevel::Info, __VA_ARGS__) ///< Info-level log
-#define EGE_WARN(...)                                                          \
-  engine::Logger::log(engine::LogLevel::Warning,                               \
-                      __VA_ARGS__) ///< Warning-level log
-#define EGE_ERROR(...)                                                         \
-  engine::Logger::log(engine::LogLevel::Error, __VA_ARGS__) ///< Error-level log
-#define EGE_CRITICAL(...)                                                      \
-  engine::Logger::log(engine::LogLevel::Critical,                              \
-                      __VA_ARGS__) ///< Critical-level log
+#define EGE_TRACE(...) engine::Logger::log(engine::LogLevel::TRACE, __VA_ARGS__)       ///< Trace-level log
+#define EGE_DEBUG(...) engine::Logger::log(engine::LogLevel::DEBUG, __VA_ARGS__)       ///< Debug-level log
+#define EGE_INFO(...) engine::Logger::log(engine::LogLevel::INFO, __VA_ARGS__)         ///< Info-level log
+#define EGE_WARN(...) engine::Logger::log(engine::LogLevel::WARNING, __VA_ARGS__)      ///< Warning-level log
+#define EGE_ERROR(...) engine::Logger::log(engine::LogLevel::ERROR, __VA_ARGS__)       ///< Error-level log
+#define EGE_CRITICAL(...) engine::Logger::log(engine::LogLevel::CRITICAL, __VA_ARGS__) ///< Critical-level log
 
 // Educational logging macros (for learning runtime)
-#define EGE_EXPLAIN(...)                                                       \
-  engine::Logger::log(engine::LogLevel::Info,                                  \
-                      "[EXPLAIN] " __VA_ARGS__) ///< Explanation messages
-#define EGE_HINT(...)                                                          \
-  engine::Logger::log(engine::LogLevel::Info,                                  \
-                      "[HINT] " __VA_ARGS__) ///< Hint messages
+#define EGE_EXPLAIN(...)                                                                                     \
+  engine::Logger::log(engine::LogLevel::INFO, "[EXPLAIN] " __VA_ARGS__) ///< Explanation messages
+#define EGE_HINT(...) engine::Logger::log(engine::LogLevel::INFO, "[HINT] " __VA_ARGS__) ///< Hint messages
 
 EGE_NAMESPACE_END

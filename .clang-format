@@ -6,7 +6,6 @@
 # Basic style settings
 BasedOnStyle: LLVM
 Language: Cpp
-Standard: Cpp17
 
 # Indentation - 2 spaces (not tabs)
 IndentWidth: 2
@@ -39,7 +38,7 @@ BraceWrapping:
   SplitEmptyNamespace: true
 
 # Line formatting
-ColumnLimit: 100
+ColumnLimit: 110
 MaxEmptyLinesToKeep: 2
 KeepEmptyLinesAtTheStartOfBlocks: false
 EmptyLineBeforeAccessModifier: LogicalBlock
@@ -72,24 +71,23 @@ ReflowComments: true
 AlignTrailingComments: true
 CommentPragmas: '^ IWYU pragma:|^/\*\*|^///'
 FixNamespaceComments: true
-ReflowComments: false
 
 # Includes
 SortIncludes: CaseSensitive
 IncludeBlocks: Regroup
 IncludeCategories:
-  - Regex:           '^<.*\.h>'
-    Priority:        1
-    SortPriority:    0
-    CaseSensitive:   false
-  - Regex:           '^<.*'
-    Priority:        2
-    SortPriority:    0
-    CaseSensitive:   false
-  - Regex:           '.*'
-    Priority:        3
-    SortPriority:    0
-    CaseSensitive:   false
+  - Regex: '^<.*\.h>'
+    Priority: 1
+    SortPriority: 0
+    CaseSensitive: false
+  - Regex: "^<.*"
+    Priority: 2
+    SortPriority: 0
+    CaseSensitive: false
+  - Regex: ".*"
+    Priority: 3
+    SortPriority: 0
+    CaseSensitive: false
 
 # Class and namespace formatting
 NamespaceIndentation: None
@@ -120,8 +118,3 @@ PenaltyReturnTypeOnItsOwnLine: 60
 
 # Continuation line formatting
 ContinuationIndentWidth: 4
-
-# Language-specific features
-Cpp11BracedListStyle: true
-Standard: Cpp17
-IndentWrappedFunctionNames: false

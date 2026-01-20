@@ -29,6 +29,10 @@ We will adopt a **modified Linux Kernel style** with adjustments for educational
 **For header:** Doxygen
 - **Style:** Doxygen-style comments for all C++ headers (.h, .hpp files)
 
+**Include layout**
+Public headers follow the pattern:
+`engine/core/include/engine/core/...`
+
 **Enforcement Tools:**
 - `.clang-format` configuration file
 - `clang-tidy` for static analysis

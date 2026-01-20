@@ -2,39 +2,61 @@
 
 EGE_NAMESPACE_BEGIN
 
-// Static member initialization
-Time::TimePoint Time::s_start_time;
-Time::TimePoint Time::s_last_frame_time;
-Time::TimePoint Time::s_current_frame_time;
+namespace
+{
+constexpr f64 ONE_VALUE = 1.0;
+constexpr f64 SIXTY_VALUE = 60.0;
+constexpr f64 ZERO_VALUE = 0.0;
+constexpr f64 DEFAULT_FIXED_FPS = 60.0;
+} // namespace
+
 
 // Time system state
-f64 Time::s_delta_time = 0.0;
-f64 Time::s_fixed_delta_time = 1.0 / 60.0; // 60 FPS default
-f64 Time::s_time = 0.0;
-f64 Time::s_time_scale = 1.0; // 1.0 = realtime
+f64 Time::s_delta_time = ZERO_VALUE;
+f64 Time::s_fixed_delta_time = ONE_VALUE / DEFAULT_FIXED_FPS; // 60 FPS default
+f64 Time::s_time = ZERO_VALUE;
+f64 Time::s_time_scale = ONE_VALUE; // 1.0 = realtime
 u64 Time::s_frame_count = 0;
 
-void Time::init() {
-  s_start_time = Clock::now();
-  s_last_frame_time = s_start_time;
-  s_current_frame_time = s_start_time;
+void Time::init()
+{
+  getStartTime() = Clock::now();
+  getLastFrameTime() = getStartTime();
+  getCurrentFrameTime() = getStartTime();
 }
 
-void Time::update() {
+auto Time::getStartTime() -> TimePoint&
+{
+  static TimePoint start_time;
+  return start_time;
+}
+
+auto Time::getLastFrameTime() -> TimePoint&
+{
+  static TimePoint last_frame_time;
+  return last_frame_time;
+}
+
+auto Time::getCurrentFrameTime() -> TimePoint&
+{
+  static TimePoint current_frame_time;
+  return current_frame_time;
+}
+
+void Time::update()
+{
   // Update current time and calculate delta time
-  s_current_frame_time = Clock::now();
+  getCurrentFrameTime() = Clock::now();
 
   // Calculate delta time in seconds (duration cast to double)
-  s_delta_time =
-      std::chrono::duration<f64>(s_current_frame_time - s_last_frame_time)
-          .count();
+  s_delta_time = std::chrono::duration<f64>(getCurrentFrameTime() - getLastFrameTime()).count();
 
   // Accumulate scaled time (affected by time_scale for slow-motion/fast-forward
   // effects)
   s_time += s_delta_time * s_time_scale;
 
   // Update frame tracking
-  s_last_frame_time = s_current_frame_time;
+  getLastFrameTime() = getCurrentFrameTime();
   s_frame_count++;
 }
 

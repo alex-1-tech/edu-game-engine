@@ -7,58 +7,100 @@
 
 EGE_NAMESPACE_BEGIN
 
-// Initialize static members
-LogLevel Logger::s_level = LogLevel::Info;
-std::ofstream Logger::s_file_stream;
+constexpr usize TIME_STRING_BUFFER_SIZE = 64;
+constexpr u8 LOG_LEVEL_COUNT = 6;
+
+LogLevel Logger::s_level = LogLevel::INFO;
+std::unique_ptr<std::ofstream> Logger::s_file_stream = nullptr;
 bool Logger::s_file_enabled = false;
 std::mutex Logger::s_mutex;
 
-void Logger::init(const String &log_file) {
-  if (s_file_enabled) {
-    s_file_stream.open(log_file, std::ios::out | std::ios::trunc);
-    if (!s_file_stream.is_open()) {
-      std::cerr << "Failed to open log file: " << log_file << '\n';
+void Logger::init(const String& log_file)
+{
+  std::lock_guard<std::mutex> lock(s_mutex);
+
+  try {
+    s_file_stream = std::make_unique<std::ofstream>(log_file, std::ios::out | std::ios::trunc);
+    if (!s_file_stream->is_open()) {
+      std::cerr << "Logger: failed to open file '" << log_file << "', falling back to console\n";
+      s_file_stream.reset();
       s_file_enabled = false;
+    } else {
+      s_file_enabled = true;
+      *s_file_stream << "=== Logger started ===\n";
+      s_file_stream->flush();
     }
+  } catch (const std::exception& e) {
+    std::cerr << "Logger exception: " << e.what() << '\n';
+    s_file_stream.reset();
+    s_file_enabled = false;
   }
 }
 
-void Logger::shutdown() {
-  if (s_file_stream.is_open()) {
-    s_file_stream.close();
+void Logger::shutdown()
+{
+  std::lock_guard<std::mutex> lock(s_mutex);
+
+  if (s_file_stream && s_file_stream->is_open()) {
+    s_file_stream->close();
   }
+  s_file_stream.reset();
 }
 
-void Logger::set_level(LogLevel level) { s_level = level; }
+void Logger::setLevel(LogLevel level)
+{
+  std::lock_guard<std::mutex> lock(s_mutex);
+  s_level = level;
+}
 
-void Logger::enable_file_output(bool enable) { s_file_enabled = enable; }
+void Logger::enableFileOutput(bool enable)
+{
+  std::lock_guard<std::mutex> lock(s_mutex);
+  s_file_enabled = enable;
+}
 
-void Logger::log_internal(LogLevel level, const String &message) {
+void Logger::logInternal(LogLevel level, const String& message)
+{
   if (level < s_level) {
     return;
   }
 
   auto now = std::chrono::system_clock::now();
   auto time = std::chrono::system_clock::to_time_t(now);
-  std::array<char, 64> time_str{};
-  std::strftime(time_str.data(), sizeof(time_str), "%H:%M:%S",
-                std::localtime(&time));
+  std::array<char, TIME_STRING_BUFFER_SIZE> time_str{};
 
-  constexpr std::array<const char *, 6> level_str = {
-      "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "CRITICAL"};
+  std::tm local_time{};
+#ifdef _WIN32
+  (void)localtime_s(&local_time, &time);
+#else
+  (void)localtime_r(&time, &local_time);
+#endif
 
-  auto formatted = fmt::format("[{}] [{}] {}", time_str.data(),
-                               level_str[static_cast<int>(level)], message);
+  const usize chars_written = std::strftime(time_str.data(), time_str.size(), "%H:%M:%S", &local_time);
 
-  std::ostream &stream = (level >= LogLevel::Warning) ? std::cerr : std::cout;
+  if (chars_written == 0) {
+    time_str[0] = '\0';
+  }
+
+  constexpr std::array<const char*, LOG_LEVEL_COUNT> LEVEL_STRINGS = {"TRACE", "DEBUG", "INFO",
+                                                                      "WARN",  "ERROR", "CRITICAL"};
+
+  auto formatted =
+      fmt::format("[{}] [{}] {}", time_str.data(), LEVEL_STRINGS[static_cast<int>(level)], message);
+
+  std::ostream& stream = (level >= LogLevel::WARNING) ? std::cerr : std::cout;
   stream << formatted << '\n';
+  stream.flush();
 
-  if (s_file_enabled && s_file_stream.is_open()) {
-    s_file_stream << formatted << '\n';
-    s_file_stream.flush();
+  if (s_file_enabled && s_file_stream && s_file_stream->is_open()) {
+    *s_file_stream << formatted << '\n';
+    s_file_stream->flush();
   }
 }
 
-std::mutex &Logger::get_mutex() { return s_mutex; }
+auto Logger::getMutex() -> std::mutex&
+{
+  return s_mutex;
+}
 
 EGE_NAMESPACE_END

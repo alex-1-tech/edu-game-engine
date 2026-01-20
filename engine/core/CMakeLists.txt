@@ -1,6 +1,7 @@
 # -------------------------
 # Fetch and configure fmt library
 # Modern C++ formatting library, used for logging
+# Provides type-safe, fast string formatting capabilities
 # -------------------------
 include(FetchContent)
 FetchContent_Declare(
@@ -11,46 +12,43 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(fmt)
 
 # -------------------------
-# Core static library
-# Contains engine foundation systems
+# Contains engine foundation systems like logging and time management
+# Forms the base layer of the engine architecture
 # -------------------------
-add_library(core STATIC
+add_library(EduGameEngineCore STATIC
     src/logging.cpp
     src/time.cpp
 )
 
 # -------------------------
-# Include directories configuration
+# EduGameEngine::Core - follows CMake best practices for namespacing
+# Provides clean, namespaced target for consumers
+# -------------------------
+add_library(EduGameEngine::Core ALIAS EduGameEngineCore)
+
+# -------------------------
 # Public headers are exposed to users of this library
+# Allows including core engine headers in dependent code
 # -------------------------
-target_include_directories(core PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+target_include_directories(EduGameEngineCore
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 # -------------------------
-# Library dependencies
-# fmt::fmt - for string formatting in logging
-# engine_glm - for math utilities (inherited from parent)
+# fmt::fmt - for string formatting in logging system
+# engine_glm - for math utilities (inherited from parent scope)
 # -------------------------
-target_link_libraries(core PUBLIC fmt::fmt engine_glm)
+target_link_libraries(EduGameEngineCore
+    PUBLIC
+        fmt::fmt
+        engine_glm
+)
 
 # -------------------------
-# Compile definitions
 # FMT_HEADER_ONLY=1 - Use header-only mode for fmt (smaller binaries)
+# PRIVATE definition means it's only used during compilation of this target
 # -------------------------
-target_compile_definitions(core PRIVATE
-    FMT_HEADER_ONLY=1
+target_compile_definitions(EduGameEngineCore
+    PRIVATE FMT_HEADER_ONLY=1
 )
-
-# -------------------------
-# Export include directories to parent scope
-# Allows parent CMakeLists.txt to know our include paths
-# -------------------------
-set(CORE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include PARENT_SCOPE)
-
-
-# -------------------------
-# Create namespace alias for the core library
-# EduGameEngine::core::core - follows CMake best practices for namespacing
-# -------------------------
-add_library(EduGameEngine::core::core ALIAS core)
