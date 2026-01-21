@@ -13,97 +13,69 @@
 
 EGE_NAMESPACE_BEGIN
 
+constexpr f64 EPSILON = 0.0001;
+
 /// @brief Time management system for game/program timing
 class Time
 {
 public:
-  using Clock = std::chrono::high_resolution_clock;           ///< High resolution clock type
+  using Clock = std::chrono::steady_clock;                    ///< Steady_clock clock type
   using Duration = std::chrono::duration<f64>;                ///< Duration in seconds with double precision
   using TimePoint = std::chrono::time_point<Clock, Duration>; ///< Time point type
 
   static void init();   ///< Initialize time system
   static void update(); ///< Update time values each frame
 
-  /**
-   * @brief Get frame delta time (scaled)
-   * @return Scaled delta time in seconds
-   */
-  static auto deltaTime() -> f64 { return s_delta_time; }
-
-  /**
-   * @brief Get fixed update delta time
-   * @return Fixed delta time in seconds
-   */
+  /// Getters
+  /// @{
+  static auto scaledDeltaTime() -> f64 { return s_scaled_delta_time; }
+  static auto deltaTime() -> f64 { return s_unscaled_delta_time; }
   static auto fixedDeltaTime() -> f64 { return s_fixed_delta_time; }
-
-  /**
-   * @brief Get current scaled time
-   * @return Current scaled time in seconds
-   */
   static auto time() -> f64 { return s_time; }
-
-  /**
-   * @brief Get time scaling factor
-   * @return Time scaling factor
-   */
   static auto timeScale() -> f64 { return s_time_scale; }
-
-  /**
-   * @brief Get current frame count
-   * @return Total frames processed
-   */
   static auto frameCount() -> u64 { return s_frame_count; }
+  /// @}
 
-  /**
-   * @brief Set time scaling factor
-   * @param scale Time scaling factor (1.0 = normal)
-   */
+  /// Setters
+  /// @{
   static void setTimeScale(f64 scale) { s_time_scale = scale; }
-
-  /**
-   * @brief Set fixed delta time
-   * @param delta Fixed delta time in seconds
-   */
   static void setFixedDeltaTime(f64 delta) { s_fixed_delta_time = delta; }
+  /// @}
 
-  /**
-   * @brief Get time since initialization in seconds
-   * @return Time elapsed since initialization
-   */
-  static auto sinceStart() -> f64
-  {
-    auto now = Clock::now();
-    return std::chrono::duration<f64>(now - s_start_time).count();
-  }
+  /// Fixed-step simulation utilities
+  /// @{
+  static auto hasFixedStep() -> bool;  ///< Check if fixed step should execute
+  static void consumeFixedStep();      ///< Consume one fixed step from accumulator
+  static void onFrameRendered();       ///< Increment frame counter after rendering
+  static auto realSinceStart() -> f64; ///< Get real (unscaled) time since initialization
+  /// @}
 
 private:
-  /**
-   * @brief Get the start time instance
-   * @return Reference to the start time
-   */
-  static auto getStartTime() -> TimePoint&;
+  // -- Geters ( Meyers' singleton ) --
+  static auto getStartTime() -> TimePoint&
+  {
+    static TimePoint start_time;
+    return start_time;
+  }
+  static auto getLastFrameTime() -> TimePoint&
+  {
+    static TimePoint last_frame_time;
+    return last_frame_time;
+  }
+  static auto getCurrentFrameTime() -> TimePoint&
+  {
+    static TimePoint current_frame_time;
+    return current_frame_time;
+  }
+  // -----------------------------------
 
-  /**
-   * @brief Get the last frame time instance
-   * @return Reference to the last frame time
-   */
-  static auto getLastFrameTime() -> TimePoint&;
-
-  /**
-   * @brief Get the current frame time instance
-   * @return Reference to the current frame time
-   */
-  static auto getCurrentFrameTime() -> TimePoint&;
-
-  static TimePoint s_start_time;         ///< Time at initialization
-  static TimePoint s_last_frame_time;    ///< Time of previous frame
-  static TimePoint s_current_frame_time; ///< Time of current frame
-
-  static f64 s_delta_time;       ///< Scaled delta time between frames
-  static f64 s_fixed_delta_time; ///< Fixed timestep for physics
-  static f64 s_time;             ///< Current scaled time
-  static f64 s_time_scale;       ///< Time scaling factor (1.0 = normal)
-  static u64 s_frame_count;      ///< Total frames processed
+  static f64 s_unscaled_delta_time; ///< Unscaled delta time between frames
+  static f64 s_scaled_delta_time;   ///< Scaled delta time between frames
+  static f64 s_fixed_delta_time;    ///< Fixed timestep for physics
+  static f64 s_time;                ///< Current scaled time
+  static f64 s_time_scale;          ///< Time scaling factor (1.0 = normal)
+  static u64 s_frame_count;         ///< Total frames processed
+  static f64 s_accumulator;         ///< Accumulated time for fixed timestep simulation.
 };
 
 /// @brief Scoped timer for profiling and educational purposes
@@ -151,7 +123,7 @@ public:
   {
     if (!m_name.empty()) {
       auto end = Time::Clock::now();
-      f64 duration = std::chrono::duration<f64>(end - m_start).count();
+      f64 duration = Time::Duration(end - m_start).count();
       // EGE_DEBUG("Timer '{}': {:.6f}s", m_name, duration);
     }
   }
@@ -163,7 +135,7 @@ public:
   [[nodiscard]] auto elapsed() const -> f64
   {
     auto now = Time::Clock::now();
-    return std::chrono::duration<f64>(now - m_start).count();
+    return Time::Duration(now - m_start).count();
   }
 
   /**
