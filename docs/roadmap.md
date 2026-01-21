@@ -14,7 +14,7 @@
 
 ### Month 1 Tasks:
 
-- [ ] **M1.1: Project Initialization and Build System**
+- [x] **M1.1: Project Initialization and Build System**
     - Configure root `CMakeLists.txt` with C++17 and Python 3.11 support.
     - Create the basic directory structure (`engine/`, `editor/`, `python/`, `tests/`, `docs/`).
     - Integrate basic dependencies (package manager, e.g., vcpkg/conan) or write setup instructions.
