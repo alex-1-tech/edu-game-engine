@@ -5,6 +5,7 @@
 # -------------------------
 add_library(EduGameEnginePlatform STATIC
     src/window_sdl.cpp
+    src/application_manager.cpp
 )
 
 # -------------------------
