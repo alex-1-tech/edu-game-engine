@@ -193,6 +193,7 @@ Before merging, ensure:
 git checkout develop
 git pull origin develop
 git branch -d feature/your-feature-name
+git fetch --prune origin
 ```
 
 ## Special Workflows
