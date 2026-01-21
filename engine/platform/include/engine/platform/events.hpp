@@ -135,9 +135,9 @@ public:
 
   /**
    * @brief Check if this is a repeat event
-   * @return b8 true if this is a key repeat event, false otherwise
+   * @return bool true if this is a key repeat event, false otherwise
    */
-  [[nodiscard]] auto isRepeat() const -> b8 { return repeat; }
+  [[nodiscard]] auto isRepeat() const -> bool { return repeat; }
 
   /**
    * @brief Convert event to string representation

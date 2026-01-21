@@ -5,18 +5,19 @@ EGE_NAMESPACE_BEGIN
 namespace
 {
 constexpr f64 ONE_VALUE = 1.0;
-constexpr f64 SIXTY_VALUE = 60.0;
 constexpr f64 ZERO_VALUE = 0.0;
-constexpr f64 DEFAULT_FIXED_FPS = 60.0;
+constexpr f64 DEFAULT_FIXED_FPS = 120.0;
 } // namespace
 
 
 // Time system state
-f64 Time::s_delta_time = ZERO_VALUE;
-f64 Time::s_fixed_delta_time = ONE_VALUE / DEFAULT_FIXED_FPS; // 60 FPS default
+f64 Time::s_unscaled_delta_time = ZERO_VALUE;
+f64 Time::s_scaled_delta_time = ZERO_VALUE;
+f64 Time::s_fixed_delta_time = ONE_VALUE / DEFAULT_FIXED_FPS;
 f64 Time::s_time = ZERO_VALUE;
 f64 Time::s_time_scale = ONE_VALUE; // 1.0 = realtime
 u64 Time::s_frame_count = 0;
+f64 Time::s_accumulator = 0;
 
 void Time::init()
 {
@@ -25,23 +26,6 @@ void Time::init()
   getCurrentFrameTime() = getStartTime();
 }
 
-auto Time::getStartTime() -> TimePoint&
-{
-  static TimePoint start_time;
-  return start_time;
-}
-
-auto Time::getLastFrameTime() -> TimePoint&
-{
-  static TimePoint last_frame_time;
-  return last_frame_time;
-}
-
-auto Time::getCurrentFrameTime() -> TimePoint&
-{
-  static TimePoint current_frame_time;
-  return current_frame_time;
-}
 
 void Time::update()
 {
@@ -49,15 +33,39 @@ void Time::update()
   getCurrentFrameTime() = Clock::now();
 
   // Calculate delta time in seconds (duration cast to double)
-  s_delta_time = std::chrono::duration<f64>(getCurrentFrameTime() - getLastFrameTime()).count();
+  const f64 realDeltaTime = std::chrono::duration<f64>(getCurrentFrameTime() - getLastFrameTime()).count();
 
-  // Accumulate scaled time (affected by time_scale for slow-motion/fast-forward
-  // effects)
-  s_time += s_delta_time * s_time_scale;
+  // Accumulate unscaled time
+  s_unscaled_delta_time = realDeltaTime;
+  s_scaled_delta_time = realDeltaTime * s_time_scale;
+
+  // Accumulate scaled time
+  s_accumulator += s_scaled_delta_time;
+  s_time += s_scaled_delta_time;
+
 
   // Update frame tracking
   getLastFrameTime() = getCurrentFrameTime();
-  s_frame_count++;
 }
+
+auto Time::hasFixedStep() -> bool
+{
+  return s_accumulator >= (s_fixed_delta_time - EPSILON);
+}
+void Time::consumeFixedStep()
+{
+  s_accumulator -= s_fixed_delta_time;
+}
+void Time::onFrameRendered()
+{
+  ++s_frame_count;
+}
+
+auto Time::realSinceStart() -> f64
+{
+  auto now = Clock::now();
+  return Duration(now - getStartTime()).count();
+}
+
 
 EGE_NAMESPACE_END

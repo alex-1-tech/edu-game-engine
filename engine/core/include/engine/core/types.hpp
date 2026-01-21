@@ -33,8 +33,6 @@ using u64 = uint64_t; ///< 64-bit unsigned integer
 using f32 = float;  ///< 32-bit floating point
 using f64 = double; ///< 64-bit floating point
 
-using b8 = bool; ///< 8-bit boolean (for alignment)
-
 // Size types
 using usize = size_t;    ///< Unsigned size type (for array sizes)
 using ssize = ptrdiff_t; ///< Signed size type (for pointer differences)
