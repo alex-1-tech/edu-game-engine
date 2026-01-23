@@ -54,12 +54,53 @@ template<typename T, typename E = String>
 using Result = std::variant<T, E>; ///< Result type for error handling (T = success, E = error)
 
 // ID types
-using EntityId = u32;        ///< Entity identifier type
+struct EntityId { ///< Entity identifier type
+
+  constexpr explicit EntityId(u32 t_value = 0)
+      : value(t_value)
+  {
+  }
+  [[nodiscard]] constexpr auto get() const { return value; }
+  constexpr auto operator==(EntityId other) const { return value == other.value; }
+  constexpr auto operator!=(EntityId other) const { return value != other.value; }
+
+private:
+  u32 value;
+};
+
+struct EntityGeneration { ///< Entity generation type
+  constexpr explicit EntityGeneration(u32 t_value = 0)
+      : value(t_value)
+  {
+  }
+  [[nodiscard]] constexpr auto get() const { return value; }
+  constexpr auto operator==(EntityGeneration other) const { return value == other.value; }
+  constexpr auto operator!=(EntityGeneration other) const { return value != other.value; }
+
+private:
+  u32 value;
+};
 using ComponentTypeId = u32; ///< Component type identifier
 using SystemId = u32;        ///< System identifier type
 
 // Special values
-static constexpr EntityId INVALID_ENTITY_ID = 0; ///< Invalid entity identifier
-static constexpr u32 MAX_ENTITIES = 10000;       ///< Maximum number of entities
+static constexpr EntityId INVALID_ENTITY_ID = EntityId(0);
+static constexpr EntityGeneration INITIAL_ENTITY_GENERATION = EntityGeneration(1);
+static constexpr u32 MAX_ENTITIES = 10000; ///< Maximum number of entities
+static constexpr u32 BITS_PER_COMPONENT = 32;
+static constexpr size_t INITIAL_CAPACITY = 100;
+constexpr f32 PERCENTAGE_MULTIPLIER = 100.0F;
+static constexpr u32 FIRST_ENTITY_ID = 1;
+static constexpr f32 ZERO_F = 0.0F;
+static constexpr f32 ONE_F = 1.0F;
+static constexpr u32 ONE = 1.0;
+constexpr f64 EPSILON = 0.0001;
+constexpr int LOG_EVERY_N_FRAMES = 60;
+
+
+// Time
+// static constexpr f64 MAX_DELTA = 0.1;
+static constexpr f64 MILLISECONDS_PER_SECOND = 1000.0;
+static constexpr u32 MAX_FIXED_UPDATES_PER_FRAME = 5;
 
 EGE_NAMESPACE_END
