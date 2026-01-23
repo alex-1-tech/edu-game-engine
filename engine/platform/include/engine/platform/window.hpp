@@ -8,7 +8,6 @@
  */
 
 #include <functional>
-#include <memory>
 
 #include "engine/platform/events.hpp"
 
@@ -88,10 +87,10 @@ public:
    * @param title Window title (default: "Edu Engine")
    * @param width Window width in pixels (default: 1280)
    * @param height Window height in pixels (default: 720)
-   * @return std::unique_ptr<Window> Unique pointer to the created window
+   * @return Unique<Window> Unique pointer to the created window
    */
   static auto create(const String& title = DEFAULT_WINDOW_TITLE, u32 width = DEFAULT_WINDOW_WIDTH,
-                     u32 height = DEFAULT_WINDOW_HEIGHT) -> std::unique_ptr<Window>;
+                     u32 height = DEFAULT_WINDOW_HEIGHT) -> Unique<Window>;
 };
 
 EGE_NAMESPACE_END

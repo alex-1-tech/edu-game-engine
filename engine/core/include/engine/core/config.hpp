@@ -24,11 +24,6 @@ struct EngineConfig {
   bool showDebugInfo = false;
   bool enableValidationLayers = true;
 
-  // Time
-  f64 MAX_DELTA = 0.1;
-  f64 MILLISECONDS_PER_SECOND = 1000.0;
-  u32 MAX_FIXED_UPDATES_PER_FRAME = 5;
-
   // Static instance
   static auto getDefault() -> const EngineConfig&
   {

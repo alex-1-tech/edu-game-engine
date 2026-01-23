@@ -72,8 +72,8 @@ private:
   void runMainLoop();
   void processFrame(f64 deltaTime);
 
-  std::unique_ptr<EngineConfig> m_config;
-  std::unique_ptr<SDLWindow> m_window;
+  Unique<EngineConfig> m_config;
+  Unique<SDLWindow> m_window;
   bool m_running = false;
 
   // Callbacks
