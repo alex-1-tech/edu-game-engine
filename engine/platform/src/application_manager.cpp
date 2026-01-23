@@ -69,7 +69,7 @@ void ApplicationManager::runMainLoop()
 
   // ===== FIXED UPDATE =====
   u32 fixedUpdateCount = 0;
-  while (Time::hasFixedStep() && fixedUpdateCount < m_config->MAX_FIXED_UPDATES_PER_FRAME) {
+  while (Time::hasFixedStep() && fixedUpdateCount < MAX_FIXED_UPDATES_PER_FRAME) {
     if (m_onUpdate) {
       m_onUpdate(Time::fixedDeltaTime());
     }
@@ -87,7 +87,7 @@ void ApplicationManager::runMainLoop()
   const f64 frameTime = Time::Duration(Time::Clock::now() - start).count();
 
   if (frameTime < target) {
-    SDL_Delay(static_cast<u32>((target - frameTime) * m_config->MILLISECONDS_PER_SECOND));
+    SDL_Delay(static_cast<u32>((target - frameTime) * MILLISECONDS_PER_SECOND));
   }
   auto end = Time::Clock::now();
   auto realFrameTime = Time::Duration(end - start).count();
@@ -123,7 +123,7 @@ void ApplicationManager::runOneFrame()
   EGE_EXPLAIN("Single frame executed:");
   EGE_EXPLAIN("  Delta time: {:.3f}s", Time::deltaTime());
   EGE_EXPLAIN("  Scaled delta time: {:.3f}s", Time::scaledDeltaTime());
-  EGE_EXPLAIN("  Frame time: {:.1f}ms", m_stats.lastFrameTime * m_config->MILLISECONDS_PER_SECOND);
+  EGE_EXPLAIN("  Frame time: {:.1f}ms", m_stats.lastFrameTime * MILLISECONDS_PER_SECOND);
   EGE_EXPLAIN("  Fixed updates this frame: {}", m_stats.fixedUpdatesThisFrame);
   EGE_EXPLAIN("  Total frames: {}", Time::frameCount());
 }
@@ -131,17 +131,16 @@ void ApplicationManager::runOneFrame()
 
 void ApplicationManager::printStats() const
 {
-  String stats =
-      fmt::format("📊 Application Statistics:\n"
-                  "├─ Runtime: {:.2f}s\n"
-                  "├─ Frames: {}\n"
-                  "├─ FPS (last): {}\n"
-                  "├─ Avg Frame Time: {:.2f}ms\n"
-                  "├─ Total Fixed Updates: {}\n"
-                  "└─ Window: {} ({}x{})\n",
-                  m_stats.totalRunTime, Time::frameCount(), m_stats.fps,
-                  m_stats.avgFrameTime * m_config->MILLISECONDS_PER_SECOND, m_stats.totalFixedUpdates,
-                  m_config->windowTitle, m_config->windowWidth, m_config->windowHeight);
+  String stats = fmt::format("📊 Application Statistics:\n"
+                             "├─ Runtime: {:.2f}s\n"
+                             "├─ Frames: {}\n"
+                             "├─ FPS (last): {}\n"
+                             "├─ Avg Frame Time: {:.2f}ms\n"
+                             "├─ Total Fixed Updates: {}\n"
+                             "└─ Window: {} ({}x{})\n",
+                             m_stats.totalRunTime, Time::frameCount(), m_stats.fps,
+                             m_stats.avgFrameTime * MILLISECONDS_PER_SECOND, m_stats.totalFixedUpdates,
+                             m_config->windowTitle, m_config->windowWidth, m_config->windowHeight);
 
   EGE_INFO("{}", stats);
 }
