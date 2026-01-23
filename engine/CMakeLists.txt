@@ -3,6 +3,7 @@
 # -------------------------
 add_subdirectory(core)
 add_subdirectory(platform)
+add_subdirectory(ecs)
 
 # -------------------------
 # Create the main executable for the engine demo
@@ -20,6 +21,7 @@ target_link_libraries(engine_demo
     PRIVATE
         EduGameEngine::Core
         EduGameEngine::Platform
+        EduGameEngine::ECS
 )
 
 # -------------------------
