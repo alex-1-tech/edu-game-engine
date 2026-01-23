@@ -13,7 +13,6 @@
 
 EGE_NAMESPACE_BEGIN
 
-constexpr f64 EPSILON = 0.0001;
 
 /// @brief Time management system for game/program timing
 class Time
