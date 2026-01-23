@@ -86,10 +86,10 @@ private:
    */
   static auto getMutex() -> std::mutex&;
 
-  static LogLevel s_level;                             ///< Current log level
-  static std::unique_ptr<std::ofstream> s_file_stream; ///< Log file stream
-  static bool s_file_enabled;                          ///< File output enabled flag
-  static std::mutex s_mutex;                           ///< Thread safety mutex
+  static LogLevel s_level;                    ///< Current log level
+  static Unique<std::ofstream> s_file_stream; ///< Log file stream
+  static bool s_file_enabled;                 ///< File output enabled flag
+  static std::mutex s_mutex;                  ///< Thread safety mutex
 };
 
 // Convenience logging macros

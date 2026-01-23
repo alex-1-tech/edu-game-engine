@@ -11,7 +11,7 @@ constexpr usize TIME_STRING_BUFFER_SIZE = 64;
 constexpr u8 LOG_LEVEL_COUNT = 6;
 
 LogLevel Logger::s_level = LogLevel::INFO;
-std::unique_ptr<std::ofstream> Logger::s_file_stream = nullptr;
+Unique<std::ofstream> Logger::s_file_stream = nullptr;
 bool Logger::s_file_enabled = false;
 std::mutex Logger::s_mutex;
 
