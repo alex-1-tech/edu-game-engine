@@ -43,6 +43,7 @@ target_link_libraries(EduGameEngineCore
     PUBLIC
         fmt::fmt
         engine_glm
+        engine_json
 )
 
 # -------------------------
