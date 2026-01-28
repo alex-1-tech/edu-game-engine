@@ -1,10 +1,21 @@
 #pragma once
 
+/**
+ * @file    systems/movement_system.hpp
+ * @brief   Movement system for updating entity transforms based on velocity
+ * @author  alex-1-tech
+ * @date    2026
+ */
+
+#include "engine/core/logging.hpp"
 #include "engine/ecs/components/transform.hpp"
 #include "engine/ecs/components/velocity.hpp"
 #include "engine/ecs/system.hpp"
 
 EGE_NAMESPACE_BEGIN
+
+constexpr int LOG_EVERY_N_FRAMES = 60;
+
 
 class MovementSystem : public System<Transform, Velocity>
 {
