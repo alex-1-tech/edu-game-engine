@@ -72,7 +72,7 @@ private:
   void runMainLoop();
   void processFrame(f64 deltaTime);
 
-  Unique<EngineConfig> m_config;
+  Config const& m_config;
   Unique<SDLWindow> m_window;
   bool m_running = false;
 

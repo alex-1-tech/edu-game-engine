@@ -1,5 +1,6 @@
 #include "engine/platform/application_manager.hpp"
 
+#include "engine/core/config.hpp"
 #include "engine/core/logging.hpp"
 #include "engine/core/time.hpp"
 #include "engine/platform/window_sdl.hpp"
@@ -7,10 +8,10 @@
 EGE_NAMESPACE_BEGIN
 
 ApplicationManager::ApplicationManager()
-    : m_config(std::make_unique<EngineConfig>())
+    : m_config(Config::getInstance())
 {
-  EGE_DEBUG("ApplicationManager created: {} ({}x{})", m_config->windowTitle, m_config->windowWidth,
-            m_config->windowHeight);
+  EGE_DEBUG("ApplicationManager created: {} ({}x{})", m_config.getWindowTitle(), m_config.getWindowWidth(),
+            m_config.getWindowHeight());
 }
 
 ApplicationManager::~ApplicationManager()
@@ -20,9 +21,13 @@ ApplicationManager::~ApplicationManager()
 
 auto ApplicationManager::initialize() -> bool
 {
+  
+  Logger::setLevel(m_config.getLoggingLevel());
+
   EGE_INFO("Initializing application...");
   m_window =
-      std::make_unique<SDLWindow>(m_config->windowTitle, m_config->windowWidth, m_config->windowHeight);
+      std::make_unique<SDLWindow>(m_config.getWindowTitle(), m_config.getWindowWidth(),
+            m_config.getWindowHeight());
 
   Time::init();
 
@@ -83,7 +88,7 @@ void ApplicationManager::runMainLoop()
   }
 
   // ===== FRAME RATE LIMIT =====
-  const f64 target = 1.0 / m_config->targetFPS;
+  const f64 target = 1.0 / m_config.getTargetFPS();
   const f64 frameTime = Time::Duration(Time::Clock::now() - start).count();
 
   if (frameTime < target) {
@@ -140,7 +145,7 @@ void ApplicationManager::printStats() const
                              "└─ Window: {} ({}x{})\n",
                              m_stats.totalRunTime, Time::frameCount(), m_stats.fps,
                              m_stats.avgFrameTime * MILLISECONDS_PER_SECOND, m_stats.totalFixedUpdates,
-                             m_config->windowTitle, m_config->windowWidth, m_config->windowHeight);
+                             m_config.getWindowTitle(), m_config.getWindowWidth(), m_config.getWindowHeight());
 
   EGE_INFO("{}", stats);
 }

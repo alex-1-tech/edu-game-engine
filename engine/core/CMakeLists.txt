@@ -1,4 +1,9 @@
 # -------------------------
+# Adding a new macro for convenience
+# -------------------------
+add_definitions(-DPROJECT_ROOT="${CMAKE_SOURCE_DIR}")
+
+# -------------------------
 # Fetch and configure fmt library
 # Modern C++ formatting library, used for logging
 # Provides type-safe, fast string formatting capabilities
@@ -18,6 +23,7 @@ FetchContent_MakeAvailable(fmt)
 add_library(EduGameEngineCore STATIC
     src/logging.cpp
     src/time.cpp
+    src/config.cpp
 )
 
 # -------------------------
