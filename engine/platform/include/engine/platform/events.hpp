@@ -43,14 +43,12 @@ public:
   {
   }
 
-  Event(const Event&) = default;                    ///< Copy constructor
-  Event(Event&&) = default;                         ///< Move constructor
-  auto operator=(const Event&) -> Event& = default; ///< Copy assignment operator
-  auto operator=(Event&&) -> Event& = default;      ///< Move assignment operator
+  Event(const Event&) = default;
+  Event(Event&&) = default;
+  auto operator=(const Event&) -> Event& = default;
+  auto operator=(Event&&) -> Event& = default;
 
-  /**
-   * @brief Destroy the Event object (virtual for proper polymorphism)
-   */
+
   virtual ~Event() = default;
 
   /**
@@ -91,9 +89,6 @@ private:
 class WindowCloseEvent : public Event
 {
 public:
-  /**
-   * @brief Construct a new WindowCloseEvent object
-   */
   WindowCloseEvent()
       : Event(EventType::WINDOW_CLOSE)
   {
