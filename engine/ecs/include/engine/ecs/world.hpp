@@ -229,7 +229,7 @@ template<typename... Components> auto World::queryEntities() -> std::vector<Enti
 
     bool has_all = true;
     auto checkComponent = [&](auto type_tag) {
-      using T = typename decltype(type_tag)::type;
+      using T = decltype(type_tag);
       if (!has_all) {
         return;
       }
@@ -246,7 +246,7 @@ template<typename... Components> auto World::queryEntities() -> std::vector<Enti
       }
     };
 
-    (checkComponent.template operator()<Components>(), ...);
+    (checkComponent(Components{}), ...);
 
     if (has_all) {
       result.push_back(entity);
