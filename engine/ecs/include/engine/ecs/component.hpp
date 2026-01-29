@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * @file    engine/ecs/component.hpp
+ * @brief   Base component interface for ECS
+ * @author  alex-1-tech
+ * @date    2026
+ */
+
 #include <fmt/format.h>
 
 #include <memory>

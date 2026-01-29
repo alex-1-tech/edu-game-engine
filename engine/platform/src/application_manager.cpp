@@ -100,7 +100,7 @@ void ApplicationManager::runMainLoop()
   m_stats.totalRunTime += realFrameTime;
   m_stats.avgFrameTime = m_stats.totalRunTime / static_cast<f64>(Time::frameCount());
 
-  // ====== real FPS ======
+  // ====== REAL FPS ======
   m_stats.fpsCounter++;
   m_stats.fpsTimer += realFrameTime;
 

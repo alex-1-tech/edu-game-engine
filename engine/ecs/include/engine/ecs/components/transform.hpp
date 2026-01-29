@@ -1,14 +1,21 @@
 #pragma once
 
+/**
+ * @file    components/transform.hpp
+ * @brief   Transform component for 2D position, rotation and scale
+ * @author  alex-1-tech
+ * @date    2026
+ */
+
 #include <fmt/format.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <string>
 
 #include "engine/core/math.hpp"
 #include "engine/core/types.hpp"
 #include "engine/ecs/component.hpp"
+#include "engine/ecs/entity.hpp"
 
 EGE_NAMESPACE_BEGIN
 

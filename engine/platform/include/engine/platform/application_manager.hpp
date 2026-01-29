@@ -16,24 +16,29 @@ EGE_NAMESPACE_BEGIN
 class ApplicationManager
 {
 public:
-  ApplicationManager();  ///<  constructor
-  ~ApplicationManager(); ///<  deconstructor
+  ApplicationManager();
+  ~ApplicationManager();
 
-  ApplicationManager(const ApplicationManager&) = delete;                    ///< Copy constructor deleted
-  auto operator=(const ApplicationManager&) -> ApplicationManager& = delete; ///< Copy assignment deleted
-  ApplicationManager(ApplicationManager&&) = delete;                         ///< Move constructor deleted
-  auto operator=(ApplicationManager&&) -> ApplicationManager& = delete;      ///< Move assignment deleted
+  ApplicationManager(const ApplicationManager&) = delete;
+  auto operator=(const ApplicationManager&) -> ApplicationManager& = delete;
+  ApplicationManager(ApplicationManager&&) = delete;
+  auto operator=(ApplicationManager&&) -> ApplicationManager& = delete;
 
-  // Lifecycle
+  /// Lifecycle
+  /// @{
   auto initialize() -> bool;
   void shutdown();
+  /// }@
 
-  // Main loop control
+  /// Main loop control
+  /// @{
   void run();         ///< Run until window closes
   void runOneFrame(); ///< Run single frame (for debugging)
   void stop();        ///< Request graceful stop
+  /// }@
 
-  // Callback setters
+  /// Callback setters
+  /// @{
   void setUpdateCallback(std::function<void(f64 deltaTime)> callback) { m_onUpdate = std::move(callback); }
 
   void setRenderCallback(std::function<void()> callback) { m_onRender = std::move(callback); }
@@ -44,8 +49,9 @@ public:
       m_window->setEventCallback(callback);
     }
   }
+  /// }@
 
-  // Accessors
+  /// Accessors
   auto getWindow() -> SDLWindow* { return m_window.get(); }
   [[nodiscard]] auto isRunning() const -> bool { return m_running; }
 
@@ -69,20 +75,19 @@ public:
   void printStats() const;
 
 private:
-  void runMainLoop();
-  void processFrame(f64 deltaTime);
+  void runMainLoop();               ///< Internal main loop implementation
+  void processFrame(f64 deltaTime); ///< Process a single frame (update, render)
 
-  Unique<EngineConfig> m_config;
-  Unique<SDLWindow> m_window;
-  bool m_running = false;
+  Unique<EngineConfig> m_config; ///< Engine configuration settings
+  Unique<SDLWindow> m_window;    ///< Main application window
+  bool m_running = false;        ///< Application running flag
 
-  // Callbacks
-  std::function<void(f64 deltaTime)> m_onUpdate;
-  std::function<void()> m_onRender;
+  std::function<void(f64 deltaTime)> m_onUpdate; ///< User-defined update callback
+  std::function<void()> m_onRender;              ///< User-defined render callback
 
-  ApplicationStats m_stats;
-  u32 m_fpsCounter = 0;
-  f64 m_fpsTimer = 0.0;
+  ApplicationStats m_stats; ///< Performance and runtime statistics
+  u32 m_fpsCounter = 0;     ///< Frames counted in current FPS measurement interval
+  f64 m_fpsTimer = 0.0;     ///< Timer for FPS calculation
 };
 
 EGE_NAMESPACE_END

@@ -50,7 +50,8 @@ public:
   /// @}
 
 private:
-  // -- Geters ( Meyers' singleton ) --
+  /// Geters ( Meyers' singleton )
+  /// @{
   static auto getStartTime() -> TimePoint&
   {
     static TimePoint start_time;
@@ -66,7 +67,7 @@ private:
     static TimePoint current_frame_time;
     return current_frame_time;
   }
-  // -----------------------------------
+  /// @}
 
   static f64 s_unscaled_delta_time; ///< Unscaled delta time between frames
   static f64 s_scaled_delta_time;   ///< Scaled delta time between frames

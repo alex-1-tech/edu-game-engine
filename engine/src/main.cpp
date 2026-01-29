@@ -25,7 +25,6 @@ public:
     static float statsTimer = 0.0F;
     statsTimer += deltaTime;
     if (statsTimer >= STATS_INTERVAL) {
-      // Вместо getStatistics() просто логируем количество сущностей
       EGE_INFO("World has {} entities", m_world->getEntityCount());
       statsTimer = 0.0F;
     }
