@@ -2,42 +2,47 @@
 ```
 ┌───────────────────────────────────────────────────────────┐
 │ Educational Game (Lesson Game)                            │
-│ (Built on the engine)                                     │
-│ • Game logic (C++/Python)                                 │
-│ • Educational content (tasks, hints, validation)          │
-│ • Integration of student code sandbox                     │
+│ (Built on the engine - C++ Core)                          │
+│ • Core game logic (C++)                                   │
+│ • Python scripting for educational tasks                  │
+│ • Student code sandbox integration                        │
 └───────────────────────────────────────────────────────────┘
-                           │ (uses engine API)
+                           │ (uses C++ Engine API)
                            ▼
 ┌───────────────────────────────────────────────────────────┐
-│ Game Engine (Core)                                        │
-│ (C++ Core + Python Bindings)                              │
+│ Game Engine Core (C++ Foundation)                         │
+│                                                           │
 ├───────────────────────────────────────────────────────────┤
-│ 1. Runtime Systems (C++)                                  │
+│ 1. Runtime Systems (C++ Only)                             │
 │    • Entity Component System (ECS)                        │
 │    • Scene Graph / World Management                       │
 │    • Physics (2D/Simple 3D)                               │
-│    • Rendering (2D/3D)                                    │
+│    • Rendering (2D/3D via SDL/OpenGL)                     │
 │    • Audio, Input, Resource Management                    │
 ├───────────────────────────────────────────────────────────┤
 │ 2. Education Support Layer                                │
-│    (C++/Python, built into core)                          │
-│    • Secure Code Sandbox (isolation, limits)              │
+│    • Secure Python Sandbox (isolation, limits)            │
 │    • Task/Quest Management System                         │
-│    • Solution Validation System                           │
-│    • Hint and Feedback System                             │
-│    • Code Execution Visualizer (step-by-step)             │
+│    • Solution Validation Engine                           │
+│    • Hint and Feedback Generation                         │
 │    • Learning Metrics Collection                          │
+│    • Code Execution Visualizer (step-by-step)             │
+└───────────────────────────────────────────────────────────┘
+                           │ (Python bindings via pybind11)
+                           ▼
+┌───────────────────────────────────────────────────────────┐
+│ Python Scripting Layer                                    │
+│ • Safe API for student code                               │
+│ • Sandboxed execution environment                         │
+│ • Limited access to game objects                          │
 └───────────────────────────────────────────────────────────┘
                            │
                            ▼
 ┌───────────────────────────────────────────────────────────┐
-│ Development Tools (Editor)                                │
-│ (Python/Qt or C++/ImGui)                                  │
-│ • Scene and game object editor                            │
-│ • Integrated educational task creation environment        │
-│ • Sandbox visual debugger                                 │
-│ • Student progress analytics viewer                       │
+│ Development Tools                                         │
+│ • Game Editor (C++/ImGui or Python/Qt)                    │
+│ • Educational Content Creator                             │
+│ • Student Progress Analytics                              │
 └───────────────────────────────────────────────────────────┘
 ```
 
