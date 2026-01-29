@@ -1,0 +1,12 @@
+{
+  "CORE": {
+    "some_core_value": 1
+  },
+  "PLATFORM": {
+    "windowHeight": 1020,
+    "windowWidth": 200,
+    "logLevel": "INFO",
+    "targetFPS": 120,
+    "title": "OMGGG"
+  }
+}

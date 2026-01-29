@@ -1,5 +1,6 @@
 #include "engine/core/base.hpp"
 #include "engine/core/logging.hpp"
+#include "engine/core/types.hpp"
 #include "engine/core/config.hpp"
 
 #include <nlohmann/json.hpp>
@@ -18,38 +19,44 @@ auto Config::stringToLogLevel(String& level) -> LogLevel{
     return ConfigDefaults::LOGLEVEL;
 }
 
-Config::Config() {
-    std::ifstream settingsFile(PROJECT_ROOT "/settings.json");
-    if(!settingsFile.is_open()){
-        EGE_ERROR("settings.json file not found, default settings will be used.");
+void Config::loadConfig() {
+    std::ifstream file(PROJECT_ROOT "/settings.json");
+    if (!file.is_open()) {
+        EGE_ERROR("settings.json not found, using defaults.");
         return;
     }
-    EGE_INFO("Reading settings from json.");
+
     try {
-        nlohmann::json jsonData = nlohmann::json::parse(settingsFile);
-        if (jsonData.contains("PLATFORM")){
-            //WindowSettings
-            u32 winH = jsonData["PLATFORM"].value("windowHeight", ConfigDefaults::HEIGHT);
-            u32 winW = jsonData["PLATFORM"].value("windowWidth", ConfigDefaults::WIDTH);
-            //String title = jsonData["PLATFORM"].value("windowTitle", ConfigDefaults::TITLE);
-
-            //LoggingSetting
-            String logLevel = jsonData["PLATFORM"].value("logLevel", "INFO");
+        auto json = nlohmann::json::parse(file);
+        
+        if (json.contains("PLATFORM")) {
+            const auto& platform = json["PLATFORM"];
             
-            //PerfomaceSettings
-            u32 tFPS = jsonData["PLATFORM"].value("targetFPS", ConfigDefaults::TARGETFPS);
+            if (platform.contains("windowWidth")) {
+                setParametr(Param::WINDOW_WIDTH, platform["windowWidth"].get<u32>());}
+                
+            if (platform.contains("windowHeight")){
+                setParametr(Param::WINDOW_HEIGHT, platform["windowHeight"].get<u32>());}
 
-            window.width = winW;
-            window.height = winH;
-            perfomance.targetFPS = tFPS;
-            logging.level = stringToLogLevel(logLevel);
+            if (platform.contains("targetFPS")){
+                setParametr(Param::TARGET_FPS, platform["targetFPS"].get<u32>());}
+
+            if (platform.contains("logLevel")) {
+                String levelStr = platform["logLevel"].get<String>();
+                setParametr(Param::LOGLEVEL, stringToLogLevel(levelStr));
+            }
+            if (platform.contains("title")) {
+                setParametr(Param::WINDOW_TITLE, platform["title"].get<String>());
+            }
 
         }
-    } catch (nlohmann::json::parse_error& exeption) {
-        EGE_ERROR(exeption.what());
-        EGE_ERROR("An error occurred while parsing; default settings will be used.");
-    } 
-    
+    } catch (const nlohmann::json::parse_error& e) {
+        EGE_ERROR("JSON Parse Error: {}", e.what());
+    }
+}
+
+Config::Config() {
+    loadConfig();
 }
 
 EGE_NAMESPACE_END

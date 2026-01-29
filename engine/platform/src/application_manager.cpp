@@ -10,10 +10,8 @@ EGE_NAMESPACE_BEGIN
 ApplicationManager::ApplicationManager()
     : m_config(Config::getInstance())
 {
-  EGE_DEBUG("ApplicationManager created: {} ({}x{})", m_config.getWindowTitle(), m_config.getWindowWidth(),
-            m_config.getWindowHeight());
-}
-
+  EGE_DEBUG("ApplicationManager created: {} ({}x{})", m_config.getParametr<String>(Config::Param::WINDOW_TITLE),
+   m_config.getParametr<u32>(Config::Param::WINDOW_WIDTH), m_config.getParametr<u32>(Config::Param::WINDOW_HEIGHT));}
 ApplicationManager::~ApplicationManager()
 {
   shutdown();
@@ -22,12 +20,12 @@ ApplicationManager::~ApplicationManager()
 auto ApplicationManager::initialize() -> bool
 {
   
-  Logger::setLevel(m_config.getLoggingLevel());
+  Logger::setLevel(m_config.getParametr<LogLevel>(Config::Param::LOGLEVEL));
 
   EGE_INFO("Initializing application...");
   m_window =
-      std::make_unique<SDLWindow>(m_config.getWindowTitle(), m_config.getWindowWidth(),
-            m_config.getWindowHeight());
+      std::make_unique<SDLWindow>(m_config.getParametr<String>(Config::Param::WINDOW_TITLE),
+   m_config.getParametr<u32>(Config::Param::WINDOW_WIDTH), m_config.getParametr<u32>(Config::Param::WINDOW_HEIGHT));
 
   Time::init();
 
@@ -88,7 +86,7 @@ void ApplicationManager::runMainLoop()
   }
 
   // ===== FRAME RATE LIMIT =====
-  const f64 target = 1.0 / m_config.getTargetFPS();
+  const f64 target = 1.0 / m_config.getParametr<u32>(Config::Param::TARGET_FPS);
   const f64 frameTime = Time::Duration(Time::Clock::now() - start).count();
 
   if (frameTime < target) {
@@ -145,7 +143,9 @@ void ApplicationManager::printStats() const
                              "└─ Window: {} ({}x{})\n",
                              m_stats.totalRunTime, Time::frameCount(), m_stats.fps,
                              m_stats.avgFrameTime * MILLISECONDS_PER_SECOND, m_stats.totalFixedUpdates,
-                             m_config.getWindowTitle(), m_config.getWindowWidth(), m_config.getWindowHeight());
+                             m_config.getParametr<String>(Config::Param::WINDOW_TITLE),
+                             m_config.getParametr<u32>(Config::Param::WINDOW_WIDTH),
+                             m_config.getParametr<u32>(Config::Param::WINDOW_HEIGHT));
 
   EGE_INFO("{}", stats);
 }
