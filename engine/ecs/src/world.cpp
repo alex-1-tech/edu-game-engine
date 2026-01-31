@@ -6,11 +6,11 @@
 
 EGE_NAMESPACE_BEGIN
 
-
 void World::updateSystems(float deltaTime)
 {
   for (auto& system : m_systems) {
     system->update(*this, deltaTime);
   }
 }
+
 EGE_NAMESPACE_END

@@ -10,7 +10,7 @@ EGE_NAMESPACE_BEGIN
 class IConfigLoader;
 class JSONConfigLoader;
 
-class Config final{
+class EngineConfig final{
 
   public:
     enum class Param : u8 {
@@ -21,17 +21,17 @@ class Config final{
       LOGLEVEL
     };
     
-    ~Config() = default;
+    ~EngineConfig() = default;
 
-    Config() = default;
-    Config(Config&) = delete;           ///< Copy constructor deleted
-    Config(Config&&) = delete;          ///< Move constructor deleted
-    auto operator=(Config&) = delete;   ///< Copy assignment deleted
-    auto operator=(Config&&) = delete;  ///< Move assignment deleted
+    EngineConfig() = default;
+    EngineConfig(EngineConfig&) = delete;           ///< Copy constructor deleted
+    EngineConfig(EngineConfig&&) = delete;          ///< Move constructor deleted
+    auto operator=(EngineConfig&) = delete;   ///< Copy assignment deleted
+    auto operator=(EngineConfig&&) = delete;  ///< Move assignment deleted
  
-    static auto getInstance() -> Config& 
+    static auto getInstance() -> EngineConfig& 
     {
-      static Config instance;
+      static EngineConfig instance;
       return instance;
     }
     auto loadFromFile(const IConfigLoader& loader, const String& path) -> bool;
@@ -196,8 +196,8 @@ public:
     IConfigLoader(IConfigLoader&&) = delete;
     auto operator=(IConfigLoader&&) -> IConfigLoader& = delete;
 
-    [[nodiscard]] virtual auto save(const Config& config, const String& path) const -> bool = 0;
-    virtual auto load(Config& config, const String& path) const -> bool = 0;
+    [[nodiscard]] virtual auto save(const EngineConfig& config, const String& path) const -> bool = 0;
+    virtual auto load(EngineConfig& config, const String& path) const -> bool = 0;
 };
 
 
@@ -207,8 +207,8 @@ public:
         EGE_INFO("Loader INIT");
     }
 
-    [[nodiscard]] auto save(const Config& config, const String& path) const -> bool override;
-    auto load(Config& config, const String& path) const -> bool override; 
+    [[nodiscard]] auto save(const EngineConfig& config, const String& path) const -> bool override;
+    auto load(EngineConfig& config, const String& path) const -> bool override; 
 };
 
 

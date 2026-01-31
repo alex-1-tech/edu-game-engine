@@ -2,20 +2,13 @@
 
 EGE_NAMESPACE_BEGIN
 
-namespace
-{
-constexpr f64 ONE_VALUE = 1.0;
-constexpr f64 ZERO_VALUE = 0.0;
-constexpr f64 DEFAULT_FIXED_FPS = 120.0;
-} // namespace
-
 
 // Time system state
-f64 Time::s_unscaled_delta_time = ZERO_VALUE;
-f64 Time::s_scaled_delta_time = ZERO_VALUE;
-f64 Time::s_fixed_delta_time = ONE_VALUE / DEFAULT_FIXED_FPS;
-f64 Time::s_time = ZERO_VALUE;
-f64 Time::s_time_scale = ONE_VALUE; // 1.0 = realtime
+f64 Time::s_unscaled_delta_time = ZERO_F;
+f64 Time::s_scaled_delta_time = ZERO_F;
+f64 Time::s_fixed_delta_time = ONE_F / DEFAULT_FIXED_FPS;
+f64 Time::s_time = ZERO_F;
+f64 Time::s_time_scale = ONE_F; // 1.0 = realtime
 u64 Time::s_frame_count = 0;
 f64 Time::s_accumulator = 0;
 

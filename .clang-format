@@ -38,7 +38,7 @@ BraceWrapping:
   SplitEmptyNamespace: true
 
 # Line formatting
-ColumnLimit: 110
+ColumnLimit: 140
 MaxEmptyLinesToKeep: 2
 KeepEmptyLinesAtTheStartOfBlocks: false
 EmptyLineBeforeAccessModifier: LogicalBlock

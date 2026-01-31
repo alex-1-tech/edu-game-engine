@@ -1,6 +1,11 @@
 #pragma once
 
-#include <string>
+/**
+ * @file    engine/ecs/system.hpp
+ * @brief   System base class for ECS
+ * @author  alex-1-tech
+ * @date    2026
+ */
 
 #include "engine/ecs/entity.hpp"
 #include "engine/ecs/world.hpp"
@@ -20,9 +25,9 @@ public:
   auto operator=(ISystem&&) -> ISystem& = delete;
 
   virtual void update(World& world, float deltaTime) = 0;
-  [[nodiscard]] virtual auto getName() const -> std::string = 0;
+  [[nodiscard]] virtual auto getName() const -> String = 0;
 
-  [[nodiscard]] virtual auto explain() const -> std::string
+  [[nodiscard]] virtual auto explain() const -> String
   {
     return getName() + " - processes entities with specific components";
   }

@@ -35,41 +35,16 @@ using EventCallbackFn = std::function<void(Event&)>;
 class Window
 {
 public:
-  Window() = default;                                ///< Default constructor
-  Window(const Window&) = delete;                    ///< Copy constructor deleted
-  auto operator=(const Window&) -> Window& = delete; ///< Copy assignment deleted
-  Window(Window&&) = delete;                         ///< Move constructor deleted
-  auto operator=(Window&&) -> Window& = delete;      ///< Move assignment deleted
-
-  /**
-   * @brief Destroy the Window object (virtual for proper inheritance)
-   */
+  Window() = default;
+  Window(const Window&) = delete;
+  auto operator=(const Window&) -> Window& = delete;
+  Window(Window&&) = delete;
+  auto operator=(Window&&) -> Window& = delete;
   virtual ~Window() = default;
 
-  /**
-   * @brief Update the window (process events, swap buffers)
-   *
-   * This method should be called once per frame to process
-   * pending events and update the window state.
-   */
   virtual void update() = 0;
-
-  /**
-   * @brief Get the current window width
-   * @return u32 Window width in pixels
-   */
   [[nodiscard]] virtual auto getWidth() const -> u32 = 0;
-
-  /**
-   * @brief Get the current window height
-   * @return u32 Window height in pixels
-   */
   [[nodiscard]] virtual auto getHeight() const -> u32 = 0;
-
-  /**
-   * @brief Check if window close has been requested
-   * @return bool true if window should close, false otherwise
-   */
   [[nodiscard]] virtual auto shouldClose() const -> bool = 0;
 
   /**

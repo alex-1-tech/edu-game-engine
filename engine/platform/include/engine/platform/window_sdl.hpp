@@ -29,53 +29,16 @@ public:
    * @param height Window height in pixels
    */
   SDLWindow(const String& title, u32 width, u32 height);
-
-  /**
-   * @brief Destroy the SDLWindow object
-   *
-   * Cleans up SDL resources and destroys the window.
-   */
   ~SDLWindow() override;
 
-  SDLWindow(const SDLWindow&) = delete;                    ///< Copy constructor deleted
-  auto operator=(const SDLWindow&) -> SDLWindow& = delete; ///< Copy assignment deleted
-
-  /**
-   * @brief Move constructor
-   * @param other Window to move from
-   */
+  SDLWindow(const SDLWindow&) = delete;
+  auto operator=(const SDLWindow&) -> SDLWindow& = delete;
   SDLWindow(SDLWindow&& other) noexcept;
-
-  /**
-   * @brief Move assignment operator
-   * @param other Window to move from
-   * @return SDLWindow& Reference to this window
-   */
   auto operator=(SDLWindow&& other) noexcept -> SDLWindow&;
 
-  /**
-   * @brief Update the window
-   *
-   * Processes pending events and swaps buffers if applicable.
-   */
   void update() override;
-
-  /**
-   * @brief Get the window width
-   * @return u32 Current window width in pixels
-   */
   [[nodiscard]] auto getWidth() const -> u32 override { return m_width; }
-
-  /**
-   * @brief Get the window height
-   * @return u32 Current window height in pixels
-   */
   [[nodiscard]] auto getHeight() const -> u32 override { return m_height; }
-
-  /**
-   * @brief Check if window should close
-   * @return bool true if window close has been requested, false otherwise
-   */
   [[nodiscard]] auto shouldClose() const -> bool override { return m_should_close; }
 
   /**

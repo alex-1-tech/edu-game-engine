@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * @file    components/name.hpp
+ * @brief   Name component for entity identification
+ * @author  alex-1-tech
+ * @date    2026
+ */
+
 #include "engine/ecs/component.hpp"
 
 EGE_NAMESPACE_BEGIN

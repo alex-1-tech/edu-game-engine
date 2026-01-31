@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * @file    components/velocity.hpp
+ * @brief   Velocity component for linear and angular movement
+ * @author  alex-1-tech
+ * @date    2026
+ */
+
 #include "engine/core/math.hpp"
 #include "engine/ecs/component.hpp"
 

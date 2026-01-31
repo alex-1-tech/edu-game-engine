@@ -1,5 +1,12 @@
 #pragma once
 
+/**
+ * @file    engine/ecs/component_pool.hpp
+ * @brief   Component pool for ECS world
+ * @author  alex-1-tech
+ * @date    2026
+ */
+
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -8,6 +15,9 @@
 #include "engine/ecs/entity.hpp"
 
 EGE_NAMESPACE_BEGIN
+
+constexpr f32 PERCENTAGE_MULTIPLIER = 100.0F;
+static constexpr size_t INITIAL_CAPACITY = 100;
 
 template<typename T> class ComponentPool
 {
