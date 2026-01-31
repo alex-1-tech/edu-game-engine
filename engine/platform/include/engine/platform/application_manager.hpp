@@ -78,7 +78,7 @@ private:
   void runMainLoop();               ///< Internal main loop implementation
   void processFrame(f64 deltaTime); ///< Process a single frame (update, render)
 
-  Unique<EngineConfig> m_config; ///< Engine configuration settings
+  EngineConfig* m_config; ///< Engine configuration settings
   Unique<SDLWindow> m_window;    ///< Main application window
   bool m_running = false;        ///< Application running flag
 
