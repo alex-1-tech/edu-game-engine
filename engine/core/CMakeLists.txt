@@ -1,9 +1,4 @@
 # -------------------------
-# Adding a new macro for convenience
-# -------------------------
-add_definitions(-DPROJECT_ROOT="${CMAKE_SOURCE_DIR}")
-
-# -------------------------
 # Fetch and configure fmt library
 # Modern C++ formatting library, used for logging
 # Provides type-safe, fast string formatting capabilities
@@ -39,6 +34,13 @@ add_library(EduGameEngine::Core ALIAS EduGameEngineCore)
 target_include_directories(EduGameEngineCore
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+# -------------------------
+# Adding a new macro for convenience
+# -------------------------
+target_compile_definitions(EduGameEngineCore PUBLIC 
+    PROJECT_ROOT="${CMAKE_SOURCE_DIR}"
 )
 
 # -------------------------
