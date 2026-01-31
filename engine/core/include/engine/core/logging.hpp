@@ -12,6 +12,7 @@
 
 #include <fstream>
 #include <mutex>
+#include <optional>
 
 #include "base.hpp"
 #include "types.hpp"
@@ -65,6 +66,12 @@ public:
    * @param enable True to enable file output, false to disable
    */
   static void enableFileOutput(bool enable);
+
+  static auto getStringToLevel() -> const std::unordered_map<String, LogLevel>&;
+
+  static auto stringToLogLevel(const String&) -> std::optional<LogLevel>;
+
+  static auto logLevelToString(const LogLevel&) -> std::optional<String>;
 
 private:
   /**

@@ -1,13 +1,14 @@
 #pragma once
 
+#include <optional>
 #include "engine/core/logging.hpp"
 #include "engine/core/types.hpp"
 
-#include <string>
-#include <unordered_map>
-
 
 EGE_NAMESPACE_BEGIN
+
+class IConfigLoader;
+class JSONConfigLoader;
 
 class Config final{
 
@@ -22,16 +23,20 @@ class Config final{
     
     ~Config() = default;
 
+    Config() = default;
     Config(Config&) = delete;           ///< Copy constructor deleted
     Config(Config&&) = delete;          ///< Move constructor deleted
     auto operator=(Config&) = delete;   ///< Copy assignment deleted
     auto operator=(Config&&) = delete;  ///< Move assignment deleted
  
-    static auto getInstance() -> Config const& 
+    static auto getInstance() -> Config& 
     {
       static Config instance;
       return instance;
-    }     
+    }
+    auto loadFromFile(const IConfigLoader& loader, const String& path) -> bool;
+    
+    [[nodiscard]] auto saveToFile(const IConfigLoader& loader, const String& path) const -> bool;
 
     template<typename T>
     [[nodiscard]] auto getParametr(Param confParam) const -> T {
@@ -62,7 +67,8 @@ class Config final{
                 }
                 break;
         }
-        throw std::runtime_error("EGE::Config: Type mismatch or unknown Param");
+        return T{};
+        EGE_ERROR("EGE::Config: Type mismatch or unknown Param");
     } 
 
     template <typename T>
@@ -71,93 +77,34 @@ class Config final{
             case Param::WINDOW_HEIGHT:
                 if constexpr (std::is_same_v<T, u32>) {
                     applyIfValid(this->window.height, value, 
-                        ConfigDefaults::MIN_HEIGHT,ConfigDefaults::MAX_HEIGHT, ConfigDefaults::HEIGHT);}
+                        ConfigDefaults::MIN_HEIGHT,ConfigDefaults::MAX_HEIGHT, ConfigDefaults::HEIGHT,
+                    [](const auto& val){ return val; });}
                 break;
             case Param::WINDOW_WIDTH:
                 if constexpr (std::is_same_v<T, u32>) {
-                    EGE_DEBUG("applyIfValid will call", this->window.width);
                     applyIfValid(this->window.width, value,
-                        ConfigDefaults::MIN_WIDTH,ConfigDefaults::MAX_WIDTH, ConfigDefaults::WIDTH);}
+                        ConfigDefaults::MIN_WIDTH,ConfigDefaults::MAX_WIDTH, ConfigDefaults::WIDTH,
+                        [](const auto& val){ return val; });}
                 break;
             case Param::WINDOW_TITLE:
                 if constexpr (std::is_same_v<T, String>) {
-                    applyIfValidString(this->window.title, value, ConfigDefaults::MIN_TITLE_LEN,
-                        ConfigDefaults::MAX_TITLE_LEN, String("EduGame Engine"));
+                    applyIfValid(this->window.title, value, ConfigDefaults::MIN_TITLE_LEN,
+                        ConfigDefaults::MAX_TITLE_LEN, String("EduGame Engine"),
+                        [](const auto& val){ return val.length(); });
                 }
                 break;
             case Param::TARGET_FPS:
                 if constexpr (std::is_same_v<T, u32>) {
                     applyIfValid(this->perfomance.targetFPS, value, ConfigDefaults::MIN_TFPS,
-                        ConfigDefaults::MAX_TFPS, ConfigDefaults::TARGETFPS);}
+                        ConfigDefaults::MAX_TFPS, ConfigDefaults::TARGETFPS, 
+                        [](const auto& val){ return val; });}
                 break;
             case Param::LOGLEVEL: 
-                if constexpr (std::is_same_v<T, LogLevel>) {
-                    this->logging.level = value;}
+                if constexpr (std::is_same_v<T, std::optional<LogLevel>>) {
+                    applyIfValidLevel(this->logging.level, value, ConfigDefaults::LOGLEVEL);}
                 break;
         }
-      //  saveConfig();
     }
-    
-  private:
-
-    Config();
-    void loadConfig();
-    //void saveConfig();
-    auto stringToLogLevel(String& level) -> LogLevel;
-
-    template<typename T>
-    static auto applyIfValid(T& field, const T& value, T min, T max, const T defaultVal) -> bool{
-        if (min < value && value < max){
-            field = value;
-            return true;
-        }
-        EGE_WARN("Validation failed: value out of bounds, setting up default value");
-        field = defaultVal;
-        return false;
-    }
-
-    template<typename T, typename P>
-    static auto applyIfValidString(T& field, const T& value, P min, P max, T defaultVal) -> bool{
-        u16 len = value.length();
-        if (min < len && len < max){
-            field = value;
-            return true;
-        }
-        EGE_WARN("Validation failed: value out of bounds, setting up default value");
-        field = defaultVal;
-        return false;
-    }
-
-    struct WindowSettings {
-      String title = ConfigDefaults::TITLE;
-      u32 width = ConfigDefaults::WIDTH;
-      u32 height = ConfigDefaults::HEIGHT;
-      bool fullscreen = ConfigDefaults::FULLSCREEN;
-      bool vsync = ConfigDefaults::VSYNC;
-    } window;
-
-    struct GraphicsSettings {
-      u32 msaaSamples = ConfigDefaults::MSAA;
-      f32 maxAnisotropy = ConfigDefaults::ANISOTROPY;
-    } graphics;
-
-    struct LoggingSetting {
-      LogLevel level = ConfigDefaults::LOGLEVEL;
-    } logging;
-
-    struct PerfomanceSettings{
-      u32 targetFPS = ConfigDefaults::TARGETFPS;
-      bool capFPS = ConfigDefaults::CAPFPS;
-    } perfomance;
-
-    const std::unordered_map<std::string, LogLevel> stringToLevel = {
-        {"TRACE",    LogLevel::TRACE},
-        {"DEBUG",    LogLevel::DEBUG},
-        {"INFO",     LogLevel::INFO},
-        {"WARNING",  LogLevel::WARNING},
-        {"ERROR",    LogLevel::ERROR},
-        {"CRITICAL", LogLevel::CRITICAL}
-    };
 
     struct ConfigDefaults {
     //WindowSettings
@@ -189,8 +136,81 @@ class Config final{
     static constexpr u32 MAX_TFPS = 400;
 
     static constexpr bool CAPFPS = true;
-  };
 
+    static constexpr const char* PATH_TO_CONFIG = PROJECT_ROOT "/settings.json";
+    };
+    
+  private:
+    static auto applyIfValidLevel(LogLevel& field, const std::optional<LogLevel>& value, const LogLevel& defaultVal) -> bool {
+        field = value.value_or(defaultVal);
+        if (value.has_value()){
+            return true;
+        }
+        EGE_WARN("Validation failed: undefined logLevel, setting up default value");
+        return false;
+    }
+
+    template<typename T, typename P, typename F>
+    static auto applyIfValid(T& field, const T& value, P min, P max, T defaultVal, F transform) -> bool{
+        auto valToCompare = transform(value);
+        if (min < valToCompare && valToCompare < max){
+            field = value;
+            return true;
+        }
+        EGE_WARN("Validation failed: value out of bounds, setting up default value");
+        field = defaultVal;
+        return false;
+    }
+
+    struct WindowSettings {
+      String title = ConfigDefaults::TITLE;
+      u32 width = ConfigDefaults::WIDTH;
+      u32 height = ConfigDefaults::HEIGHT;
+      bool fullscreen = ConfigDefaults::FULLSCREEN;
+      bool vsync = ConfigDefaults::VSYNC;
+    } window;
+
+    struct GraphicsSettings {
+      u32 msaaSamples = ConfigDefaults::MSAA;
+      f32 maxAnisotropy = ConfigDefaults::ANISOTROPY;
+    } graphics;
+
+    struct LoggingSetting {
+      LogLevel level = ConfigDefaults::LOGLEVEL;
+    } logging;
+
+    struct PerfomanceSettings{
+      u32 targetFPS = ConfigDefaults::TARGETFPS;
+      bool capFPS = ConfigDefaults::CAPFPS;
+    } perfomance;
 };
+
+
+class IConfigLoader {
+public:
+    virtual ~IConfigLoader() = default;
+
+    IConfigLoader()=default;
+    IConfigLoader(const IConfigLoader&) = delete;
+    auto operator=(const IConfigLoader&) -> IConfigLoader& = delete;
+    IConfigLoader(IConfigLoader&&) = delete;
+    auto operator=(IConfigLoader&&) -> IConfigLoader& = delete;
+
+    [[nodiscard]] virtual auto save(const Config& config, const String& path) const -> bool = 0;
+    virtual auto load(Config& config, const String& path) const -> bool = 0;
+};
+
+
+class JSONConfigLoader : public IConfigLoader {
+public:
+    JSONConfigLoader() { 
+        EGE_INFO("Loader INIT");
+    }
+
+    [[nodiscard]] auto save(const Config& config, const String& path) const -> bool override;
+    auto load(Config& config, const String& path) const -> bool override; 
+};
+
+
 
 EGE_NAMESPACE_END

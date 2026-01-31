@@ -10,9 +10,11 @@ EGE_NAMESPACE_BEGIN
 ApplicationManager::ApplicationManager()
     : m_config(Config::getInstance())
 {
+  m_config.loadFromFile(JSONConfigLoader{}, String(Config::ConfigDefaults::PATH_TO_CONFIG));
   EGE_DEBUG("ApplicationManager created: {} ({}x{})", m_config.getParametr<String>(Config::Param::WINDOW_TITLE),
-   m_config.getParametr<u32>(Config::Param::WINDOW_WIDTH), m_config.getParametr<u32>(Config::Param::WINDOW_HEIGHT));}
-ApplicationManager::~ApplicationManager()
+  m_config.getParametr<u32>(Config::Param::WINDOW_WIDTH), m_config.getParametr<u32>(Config::Param::WINDOW_HEIGHT));}
+
+  ApplicationManager::~ApplicationManager()
 {
   shutdown();
 }
@@ -30,6 +32,15 @@ auto ApplicationManager::initialize() -> bool
   Time::init();
 
   m_running = true;
+
+  //Trying to save new confing [DEBUG PURPOSE ONLY]/////////////////////////////////
+  m_config.setParametr(Config::Param::LOGLEVEL, LogLevel::WARNING);
+  m_config.setParametr(Config::Param::WINDOW_TITLE, String("NEW TITLE"));
+  u32 const new_size = 1234;
+  m_config.setParametr(Config::Param::WINDOW_WIDTH, new_size);
+  bool result = m_config.saveToFile(JSONConfigLoader{}, Config::ConfigDefaults::PATH_TO_CONFIG);
+  ///////////////////////////////////////////////////////////////////////////////////
+
   return true;
 }
 

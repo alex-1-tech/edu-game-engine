@@ -9,54 +9,78 @@
 
 EGE_NAMESPACE_BEGIN
 
-auto Config::stringToLogLevel(String& level) -> LogLevel{
-    auto map_iterator = stringToLevel.find(level);
-    if (map_iterator != stringToLevel.end())
-    {
-        return map_iterator->second;
-    }
-    EGE_ERROR("You entered an incorrect logging level in settings.json.");
-    return ConfigDefaults::LOGLEVEL;
-}
+auto JSONConfigLoader::save(const Config& config, const String& path) const -> bool{
+    nlohmann::json jsonObj;
 
-void Config::loadConfig() {
-    std::ifstream file(PROJECT_ROOT "/settings.json");
+    jsonObj = {
+            {"PLATFORM", {
+            {"windowWidth", config.getParametr<u32>(Config::Param::WINDOW_WIDTH)},
+            {"windowHeight", config.getParametr<u32>(Config::Param::WINDOW_HEIGHT)},
+            {"title", config.getParametr<String>(Config::Param::WINDOW_TITLE)},
+            {"targetFPS", config.getParametr<u32>(Config::Param::TARGET_FPS)},
+            {"logLevel", Logger::logLevelToString(config.getParametr<LogLevel>(Config::Param::LOGLEVEL)).value()}
+        }}
+    };
+
+    std::ofstream file(path, std::ios::out | std::ios::trunc);
+
     if (!file.is_open()) {
-        EGE_ERROR("settings.json not found, using defaults.");
-        return;
+        EGE_ERROR("Failed to create or open file: {}", path);
+        return false;
     }
 
+    file << jsonObj.dump();
+    EGE_INFO("Write config in json");
+    return true; 
+}
+
+auto JSONConfigLoader::load(Config& config, const String& path) const -> bool {
+    std::ifstream file(path);
+    if (!file.is_open()) {
+        EGE_ERROR("Config file not found: {}", path);
+        return false;
+    }
+
+    nlohmann::json json;
     try {
-        auto json = nlohmann::json::parse(file);
-        
-        if (json.contains("PLATFORM")) {
-            const auto& platform = json["PLATFORM"];
-            
-            if (platform.contains("windowWidth")) {
-                setParametr(Param::WINDOW_WIDTH, platform["windowWidth"].get<u32>());}
-                
-            if (platform.contains("windowHeight")){
-                setParametr(Param::WINDOW_HEIGHT, platform["windowHeight"].get<u32>());}
-
-            if (platform.contains("targetFPS")){
-                setParametr(Param::TARGET_FPS, platform["targetFPS"].get<u32>());}
-
-            if (platform.contains("logLevel")) {
-                String levelStr = platform["logLevel"].get<String>();
-                setParametr(Param::LOGLEVEL, stringToLogLevel(levelStr));
-            }
-            if (platform.contains("title")) {
-                setParametr(Param::WINDOW_TITLE, platform["title"].get<String>());
-            }
-
-        }
+        json = nlohmann::json::parse(file);
     } catch (const nlohmann::json::parse_error& e) {
-        EGE_ERROR("JSON Parse Error: {}", e.what());
+        EGE_ERROR("JSON Syntax Error: {}", e.what());
+        return false;
     }
+
+    if (!json.contains("PLATFORM")) {
+        EGE_ERROR("Critical error: Section [PLATFORM] missing in config!");
+        return false;
+    }
+
+    const auto& platform = json["PLATFORM"];
+    if (platform.contains("windowWidth")) {
+        config.setParametr(Config::Param::WINDOW_WIDTH, platform["windowWidth"].get<u32>());}
+        
+    if (platform.contains("windowHeight")){
+        config.setParametr(Config::Param::WINDOW_HEIGHT, platform["windowHeight"].get<u32>());}
+
+    if (platform.contains("targetFPS")){
+        config.setParametr(Config::Param::TARGET_FPS, platform["targetFPS"].get<u32>());}
+
+    if (platform.contains("logLevel")) {
+        String levelStr = platform["logLevel"].get<String>();
+        config.setParametr(Config::Param::LOGLEVEL, Logger::stringToLogLevel(levelStr));
+    }
+    if (platform.contains("title")) {
+        config.setParametr(Config::Param::WINDOW_TITLE, platform["title"].get<String>());
+    }
+    return true;
 }
 
-Config::Config() {
-    loadConfig();
+auto Config::loadFromFile(const IConfigLoader& loader, const String& path) -> bool {
+        return loader.load(*this, path);
+    }
+
+auto Config::saveToFile(const IConfigLoader& loader, const String& path) const -> bool{
+    return loader.save(*this, path);
 }
+
 
 EGE_NAMESPACE_END

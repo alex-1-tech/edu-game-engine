@@ -1,9 +1,11 @@
 #include "engine/core/logging.hpp"
 
 #include <array>
+#include <boost/range/algorithm/find_if.hpp>
 #include <chrono>
 #include <ctime>
 #include <iostream>
+#include <optional>
 
 EGE_NAMESPACE_BEGIN
 
@@ -101,6 +103,42 @@ void Logger::logInternal(LogLevel level, const String& message)
 auto Logger::getMutex() -> std::mutex&
 {
   return s_mutex;
+}
+
+auto Logger::getStringToLevel() -> const std::unordered_map<String, LogLevel>& 
+{
+  static const auto STRING_TO_LEVEL = std::unordered_map<String, LogLevel> {
+        {"TRACE",    LogLevel::TRACE},
+        {"DEBUG",    LogLevel::DEBUG},
+        {"INFO",     LogLevel::INFO},
+        {"WARNING",  LogLevel::WARNING},
+        {"ERROR",    LogLevel::ERROR},
+        {"CRITICAL", LogLevel::CRITICAL}
+    };
+  return STRING_TO_LEVEL;
+}
+
+
+auto Logger::stringToLogLevel(const String& level) -> std::optional<LogLevel>{
+    const auto& map = Logger::getStringToLevel();
+    auto map_it = map.find(level);
+    if (map_it != map.end())
+    {
+        return map_it->second;
+    }
+    return std::nullopt;
+}
+
+auto Logger::logLevelToString(const LogLevel& level) -> std::optional<String>{
+    const auto& map = Logger::getStringToLevel();
+
+    auto map_it = boost::range::find_if(map, 
+    [level](const auto& pair){ return pair.second == level; });
+    if (map_it != map.end()){
+      return map_it->first;
+    }
+    return std::nullopt;
+    
 }
 
 EGE_NAMESPACE_END
