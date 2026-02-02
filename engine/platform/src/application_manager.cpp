@@ -10,35 +10,36 @@ EGE_NAMESPACE_BEGIN
 ApplicationManager::ApplicationManager()
     : m_config(&EngineConfig::getInstance())
 {
-  m_config->loadFromFile(JSONConfigLoader{}, String(EngineConfig::ConfigDefaults::PATH_TO_CONFIG));
-  EGE_DEBUG("ApplicationManager created: {} ({}x{})", m_config->getParametr<String>(EngineConfig::Param::WINDOW_TITLE),
-  m_config->getParametr<u32>(EngineConfig::Param::WINDOW_WIDTH), m_config->getParametr<u32>(EngineConfig::Param::WINDOW_HEIGHT));}
+  m_config->loadFromFile(JSONConfigLoader{}, String(ConfigDefaults::PATH_TO_CONFIG));
+  EGE_DEBUG("ApplicationManager created: {} ({}x{})", m_config->getProperty<String>(EngineConfig::Property::WINDOW_TITLE),
+            m_config->getProperty<u32>(EngineConfig::Property::WINDOW_WIDTH),
+            m_config->getProperty<u32>(EngineConfig::Property::WINDOW_HEIGHT));
+}
 
-  ApplicationManager::~ApplicationManager()
+ApplicationManager::~ApplicationManager()
 {
   shutdown();
 }
 
 auto ApplicationManager::initialize() -> bool
 {
-  
-  Logger::setLevel(m_config->getParametr<LogLevel>(EngineConfig::Param::LOGLEVEL));
+  Logger::setLevel(m_config->getProperty<LogLevel>(EngineConfig::Property::LOGLEVEL));
 
   EGE_INFO("Initializing application...");
-  m_window =
-      std::make_unique<SDLWindow>(m_config->getParametr<String>(EngineConfig::Param::WINDOW_TITLE),
-   m_config->getParametr<u32>(EngineConfig::Param::WINDOW_WIDTH), m_config->getParametr<u32>(EngineConfig::Param::WINDOW_HEIGHT));
+  m_window = std::make_unique<SDLWindow>(m_config->getProperty<String>(EngineConfig::Property::WINDOW_TITLE),
+                                         m_config->getProperty<u32>(EngineConfig::Property::WINDOW_WIDTH),
+                                         m_config->getProperty<u32>(EngineConfig::Property::WINDOW_HEIGHT));
 
   Time::init();
 
   m_running = true;
 
-  //Trying to save new confing [DEBUG PURPOSE ONLY]/////////////////////////////////
-  m_config->setParametr(EngineConfig::Param::LOGLEVEL, LogLevel::WARNING);
-  m_config->setParametr(EngineConfig::Param::WINDOW_TITLE, String("NEW TITLE"));
+  // Trying to save new confing [DEBUG PURPOSE ONLY]/////////////////////////////////
+  m_config->setProperty<LogLevel>(EngineConfig::Property::LOGLEVEL, LogLevel::WARNING);
+  m_config->setProperty<String>(EngineConfig::Property::WINDOW_TITLE, String("NEW TITLE"));
   u32 const new_size = 1234;
-  m_config->setParametr(EngineConfig::Param::WINDOW_WIDTH, new_size);
-  bool result = m_config->saveToFile(JSONConfigLoader{}, EngineConfig::ConfigDefaults::PATH_TO_CONFIG);
+  m_config->setProperty<u32>(EngineConfig::Property::WINDOW_WIDTH, new_size);
+  bool result = m_config->saveToFile(JSONConfigLoader{}, ConfigDefaults::PATH_TO_CONFIG);
   ///////////////////////////////////////////////////////////////////////////////////
 
   return true;
@@ -97,7 +98,8 @@ void ApplicationManager::runMainLoop()
   }
 
   // ===== FRAME RATE LIMIT =====
-  const f64 target = 1.0 / m_config->getParametr<u32>(EngineConfig::Param::TARGET_FPS);
+  const f64 target = 1.0 / 120;
+  // const f64 target = 1.0 / m_config->getProperty<u32>(EngineConfig::Property::TARGET_FPS);
   const f64 frameTime = Time::Duration(Time::Clock::now() - start).count();
 
   if (frameTime < target) {
@@ -152,11 +154,10 @@ void ApplicationManager::printStats() const
                              "├─ Avg Frame Time: {:.2f}ms\n"
                              "├─ Total Fixed Updates: {}\n"
                              "└─ Window: {} ({}x{})\n",
-                             m_stats.totalRunTime, Time::frameCount(), m_stats.fps,
-                             m_stats.avgFrameTime * MILLISECONDS_PER_SECOND, m_stats.totalFixedUpdates,
-                             m_config->getParametr<String>(EngineConfig::Param::WINDOW_TITLE),
-                             m_config->getParametr<u32>(EngineConfig::Param::WINDOW_WIDTH),
-                             m_config->getParametr<u32>(EngineConfig::Param::WINDOW_HEIGHT));
+                             m_stats.totalRunTime, Time::frameCount(), m_stats.fps, m_stats.avgFrameTime * MILLISECONDS_PER_SECOND,
+                             m_stats.totalFixedUpdates, m_config->getProperty<String>(EngineConfig::Property::WINDOW_TITLE),
+                             m_config->getProperty<u32>(EngineConfig::Property::WINDOW_WIDTH),
+                             m_config->getProperty<u32>(EngineConfig::Property::WINDOW_HEIGHT));
 
   EGE_INFO("{}", stats);
 }
