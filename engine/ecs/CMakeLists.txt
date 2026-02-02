@@ -15,7 +15,7 @@ add_library(EduGameEngine::ECS ALIAS EduGameEngineECS)
 # -------------------------
 target_include_directories(EduGameEngineECS
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 # -------------------------
@@ -24,5 +24,6 @@ target_include_directories(EduGameEngineECS
 # -------------------------
 target_link_libraries(EduGameEngineECS
     PUBLIC
-        EduGameEngine::Core
+    EduGameEngine::Core
+    EduGameEngine::Graphics
 )
