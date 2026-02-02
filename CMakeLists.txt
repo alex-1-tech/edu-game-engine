@@ -15,14 +15,18 @@ include(FetchContent)
 # Fetch SDL2
 # -------------------------
 set(SDL2_DISABLE_INSTALL ON CACHE BOOL "" FORCE)
-set(SDL_SHARED OFF CACHE BOOL "" FORCE)
-set(SDL_STATIC ON CACHE BOOL "" FORCE)
+set(SDL_SHARED ON CACHE BOOL "" FORCE)
+set(SDL_STATIC OFF CACHE BOOL "" FORCE)
 set(SDL_TEST OFF CACHE BOOL "" FORCE)
+set(SDL2IMAGE_SHARED OFF CACHE BOOL "Build SDL2_image as static library" FORCE)
+set(SDL2IMAGE_STATIC ON CACHE BOOL "Build SDL2_image as static library" FORCE)
+set(SDL2IMAGE_VENDORED OFF CACHE BOOL "Use vendored libraries" FORCE)
 
 FetchContent_Declare(
     SDL2
     GIT_REPOSITORY https://github.com/libsdl-org/SDL
     GIT_TAG release-2.32.10
+    SYSTEM
 )
 
 # -------------------------
@@ -35,9 +39,20 @@ FetchContent_Declare(
     SYSTEM
 )
 
-# FetchContent_Declare(imgui...)
+# -------------------------
+# Fetch SDL2_image
+# -------------------------
 
-FetchContent_MakeAvailable(SDL2 glm)
+FetchContent_Declare(
+    SDL2_image
+    GIT_REPOSITORY https://github.com/libsdl-org/SDL_image
+    GIT_TAG release-2.8.8
+    SYSTEM
+)
+
+
+
+FetchContent_MakeAvailable(SDL2 glm SDL2_image)
 
 
 # -------------------------
