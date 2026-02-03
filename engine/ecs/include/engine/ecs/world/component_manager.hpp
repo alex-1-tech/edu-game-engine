@@ -7,7 +7,9 @@
  * @date    2026
  */
 
+#include <atomic>
 #include <memory>
+#include <mutex>
 #include <typeindex>
 #include <unordered_map>
 
@@ -45,10 +47,7 @@ public:
   auto getPool() -> ComponentPool<T>& { return m_pool; }
   auto getPool() const -> const ComponentPool<T>& { return m_pool; }
 
-  [[nodiscard]] auto hasComponent(Entity entity) const -> bool override
-  {
-    return m_pool.hasComponent(entity);
-  }
+  [[nodiscard]] auto hasComponent(Entity entity) const -> bool override { return m_pool.hasComponent(entity); }
 
   auto removeComponent(Entity entity) -> bool override { return m_pool.removeComponent(entity); }
 
@@ -66,8 +65,7 @@ public:
 
   auto getBitToTypeMap() const -> const std::unordered_map<u32, std::type_index>& { return m_bit_to_type; }
 
-  auto getComponentPools() const
-      -> const std::unordered_map<std::type_index, std::unique_ptr<ComponentPoolBase>>&
+  auto getComponentPools() const -> const std::unordered_map<std::type_index, std::unique_ptr<ComponentPoolBase>>&
   {
     return m_component_pools;
   }
@@ -150,10 +148,8 @@ public:
   }
 
   template<typename T> auto getComponentTypeId() -> u32;
-  static auto getComponentMask(Entity entity) -> ComponentMask;
 
 private:
-  u32 m_next_component_type_id = 0;
   std::unordered_map<std::type_index, std::unique_ptr<ComponentPoolBase>> m_component_pools;
   std::unordered_map<std::type_index, u32> m_type_to_bit;
   std::unordered_map<u32, std::type_index> m_bit_to_type;
@@ -179,30 +175,35 @@ template<typename T> auto ComponentManager::getOrCreatePool() -> ComponentPool<T
 
 template<typename T> auto ComponentManager::registerComponentType() -> u32
 {
-  static u32 typeId = m_next_component_type_id++;
-  if (typeId >= MAX_COMPONENT_TYPES) {
+  static std::atomic<u32> s_next_type_id{0};
+  static std::mutex s_registration_mutex;
+
+  std::lock_guard<std::mutex> lock(s_registration_mutex);
+
+  auto type_idx = std::type_index(typeid(T));
+  auto iterator = m_type_to_bit.find(type_idx);
+
+  if (iterator != m_type_to_bit.end()) {
+    return iterator->second;
+  }
+
+  const u32 new_id = s_next_type_id.fetch_add(1, std::memory_order_relaxed);
+
+  if (new_id >= MAX_COMPONENT_TYPES) {
     EGE_ERROR("Too many component types! Maximum is {}", MAX_COMPONENT_TYPES);
     return INVALID_COMPONENT_TYPE;
   }
 
-  auto type_idx = std::type_index(typeid(T));
-  if (m_type_to_bit.find(type_idx) == m_type_to_bit.end()) {
-    m_type_to_bit.emplace(type_idx, typeId);
-    m_bit_to_type.emplace(typeId, type_idx);
-  }
+  m_type_to_bit.emplace(type_idx, new_id);
+  m_bit_to_type.emplace(new_id, type_idx);
 
-  return typeId;
+  return new_id;
 }
 
 template<typename T> auto ComponentManager::getComponentTypeId() -> u32
 {
   static const u32 typeId = registerComponentType<T>();
   return typeId;
-}
-
-inline auto ComponentManager::getComponentMask(Entity /*entity*/) -> ComponentMask
-{
-  return 0;
 }
 
 EGE_NAMESPACE_END

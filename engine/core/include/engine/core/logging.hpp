@@ -10,6 +10,7 @@
 #include <fmt/core.h>
 #include <fmt/format.h>
 
+#include <cassert>
 #include <fstream>
 #include <mutex>
 #include <optional>
@@ -108,8 +109,25 @@ private:
 #define EGE_CRITICAL(...) engine::Logger::log(engine::LogLevel::CRITICAL, __VA_ARGS__) ///< Critical-level log
 
 // Educational logging macros (for learning runtime)
-#define EGE_EXPLAIN(...)                                                                                     \
-  engine::Logger::log(engine::LogLevel::INFO, "[EXPLAIN] " __VA_ARGS__) ///< Explanation messages
-#define EGE_HINT(...) engine::Logger::log(engine::LogLevel::INFO, "[HINT] " __VA_ARGS__) ///< Hint messages
+#define EGE_EXPLAIN(...) engine::Logger::log(engine::LogLevel::INFO, "[EXPLAIN] " __VA_ARGS__) ///< Explanation messages
+#define EGE_HINT(...) engine::Logger::log(engine::LogLevel::INFO, "[HINT] " __VA_ARGS__)       ///< Hint messages
+
+
+// Debug macros
+#if !defined(NDEBUG) || defined(EGE_DEBUG)
+#define EGE_DEBUG_MODE 1 ///< Debug mode is active
+
+/// @brief Assertion macro with logging
+#define EGE_ASSERT(expr, ...)                                                                                                              \
+  do {                                                                                                                                     \
+    if (!(expr)) {                                                                                                                         \
+      EGE_CRITICAL("Assertion failed: {} ({})", #expr, __VA_ARGS__);                                                                       \
+      assert(expr);                                                                                                                        \
+    }                                                                                                                                      \
+  } while (0)
+#else
+#define EGE_DEBUG_MODE 0                ///< Debug mode is inactive
+#define EGE_ASSERT(expr, ...) ((void)0) ///< No-op in release builds
+#endif
 
 EGE_NAMESPACE_END

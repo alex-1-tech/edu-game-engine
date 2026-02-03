@@ -5,6 +5,7 @@
 #include "engine/core/config/config_types.hpp"
 #include "engine/core/logging.hpp"
 #include "engine/core/time.hpp"
+#include "engine/core/types.hpp"
 #include "engine/platform/window_sdl.hpp"
 
 EGE_NAMESPACE_BEGIN
@@ -29,7 +30,10 @@ auto ApplicationManager::initialize() -> bool
   m_window =
       std::make_unique<SDLWindow>(m_config->getProperty<String>(Property::WINDOW_TITLE), m_config->getProperty<u32>(Property::WINDOW_WIDTH),
                                   m_config->getProperty<u32>(Property::WINDOW_HEIGHT));
-
+  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    EGE_ERROR("SDL Init Error: {}", SDL_GetError());
+    return false;
+  }
   Time::init();
 
   m_running = true;
@@ -52,6 +56,7 @@ void ApplicationManager::shutdown()
   }
 
   EGE_INFO("Shutting down application...");
+  SDL_Quit();
   m_running = false;
   m_window.reset();
   EGE_INFO("Application shutdown complete");
@@ -98,8 +103,11 @@ void ApplicationManager::runMainLoop()
   }
 
   // ===== FRAME RATE LIMIT =====
-  const f64 target = 1.0 / m_config->getProperty<u32>(Property::TARGET_FPS);
   const f64 frameTime = Time::Duration(Time::Clock::now() - start).count();
+  f64 target = ONE_F / DEFAULT_FIXED_FPS;
+  if (m_config->getProperty<u32>(Property::TARGET_FPS) > 0) {
+    target = ONE_F / static_cast<f64>(m_config->getProperty<u32>(Property::TARGET_FPS));
+  }
 
   if (frameTime < target) {
     SDL_Delay(static_cast<u32>((target - frameTime) * MILLISECONDS_PER_SECOND));

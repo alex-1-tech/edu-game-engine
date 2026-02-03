@@ -51,7 +51,13 @@ public:
       return false;
     }
 
+    EGE_ASSERT(!m_components.empty(), "Trying to remove from empty pool. Entity: {}", entity.toString());
+
     const usize indexToRemove = iterator->second;
+
+    EGE_ASSERT(indexToRemove < m_components.size(), "Index {} out of bounds [0, {}] for entity {}", indexToRemove,
+               m_components.size() - ONE, entity.toString());
+
     const usize lastIndex = m_components.size() - 1;
 
     if (indexToRemove != lastIndex) {
@@ -78,29 +84,24 @@ public:
     return &m_components[iterator->second];
   }
 
-  auto getComponent(Entity entity) const -> const T*
-  {
-    return const_cast<T*>(std::as_const(*this).getComponent(entity));
-  }
+  auto getComponent(Entity entity) const -> const T* { return const_cast<T*>(std::as_const(*this).getComponent(entity)); }
 
-  auto hasComponent(Entity entity) const -> bool
-  {
-    return m_entity_to_index.find(entity) != m_entity_to_index.end();
-  }
+  auto hasComponent(Entity entity) const -> bool { return m_entity_to_index.find(entity) != m_entity_to_index.end(); }
 
-  auto getAllComponents() -> std::vector<T>& { return m_components; }
   auto getAllComponents() const -> const std::vector<T>& { return m_components; }
 
   auto visualizeMemoryLayout() const -> String
   {
+    f32 load_factor = 0;
+    if (m_components.capacity() != 0) {
+      (m_components.size() * PERCENTAGE_MULTIPLIER) / m_components.capacity();
+    }
     return fmt::format("ComponentPool[{}]:\n"
                        "  Entities: {}\n"
                        "  Components: {}\n"
                        "  Memory: {} bytes\n"
                        "  Load Factor: {:.1f}%",
-                       typeid(T).name(), m_entity_to_index.size(), m_components.size(),
-                       m_components.capacity() * sizeof(T),
-                       (m_components.size() * PERCENTAGE_MULTIPLIER) / m_components.capacity());
+                       typeid(T).name(), m_entity_to_index.size(), m_components.size(), m_components.capacity() * sizeof(T), load_factor);
   }
 
   auto getAllEntities() const -> std::vector<Entity>
