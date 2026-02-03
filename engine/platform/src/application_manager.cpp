@@ -1,8 +1,8 @@
 #include "engine/platform/application_manager.hpp"
 
-#include "engine/core/config.hpp"
-#include "engine/core/config_loader.hpp"
-#include "engine/core/config_types.hpp"
+#include "engine/core/config/config.hpp"
+#include "engine/core/config/config_loader.hpp"
+#include "engine/core/config/config_types.hpp"
 #include "engine/core/logging.hpp"
 #include "engine/core/time.hpp"
 #include "engine/platform/window_sdl.hpp"
@@ -98,8 +98,7 @@ void ApplicationManager::runMainLoop()
   }
 
   // ===== FRAME RATE LIMIT =====
-  const f64 target = 1.0 / 120;
-  // const f64 target = 1.0 / m_config->getProperty<u32>(Property::TARGET_FPS);
+  const f64 target = 1.0 / m_config->getProperty<u32>(Property::TARGET_FPS);
   const f64 frameTime = Time::Duration(Time::Clock::now() - start).count();
 
   if (frameTime < target) {

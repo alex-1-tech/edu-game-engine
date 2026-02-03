@@ -1,17 +1,17 @@
-#include "engine/core/config_loader.hpp"
+#include "engine/core/config/config_loader.hpp"
 
 #include <fstream>
 #include <nlohmann/json.hpp>
 #include <optional>
 
 #include "engine/core/base.hpp"
-#include "engine/core/config.hpp"
-#include "engine/core/config_default.hpp"
-#include "engine/core/config_types.hpp"
+#include "engine/core/config/config.hpp"
+#include "engine/core/config/config_types.hpp"
 #include "engine/core/logging.hpp"
 #include "engine/core/types.hpp"
 
 EGE_NAMESPACE_BEGIN
+
 auto JSONConfigLoader::save(const EngineConfig& config, const String& path) const -> bool
 {
   nlohmann::json jsonObj;
@@ -37,8 +37,6 @@ auto JSONConfigLoader::save(const EngineConfig& config, const String& path) cons
 
 auto JSONConfigLoader::load(EngineConfig& config, const String& path) const -> bool
 {
-  ConfigDefaults::setUpDefaultSettings(config);
-
   std::ifstream file(path);
   if (!file.is_open()) {
     EGE_ERROR("Config file not found: {}", path);
@@ -80,4 +78,5 @@ auto JSONConfigLoader::load(EngineConfig& config, const String& path) const -> b
   }
   return true;
 }
+
 EGE_NAMESPACE_END
