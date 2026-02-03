@@ -50,7 +50,6 @@ class EngineConfig final
 public:
   ~EngineConfig() = default;
 
-  EngineConfig();
   EngineConfig(EngineConfig&) = delete;
   EngineConfig(EngineConfig&&) = delete;
   auto operator=(EngineConfig&) = delete;
@@ -82,6 +81,7 @@ public:
   template<typename T> void setProperty(Property configProperty, T value);
 
 private:
+  EngineConfig() = default;
   std::unordered_map<Property, ConfigValue> m_values;
 };
 
