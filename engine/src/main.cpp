@@ -6,6 +6,7 @@
 #include <engine/ecs/world.hpp>
 #include <engine/platform/application_manager.hpp>
 
+#include "engine/core/config.hpp"
 #include "engine/core/types.hpp"
 
 using namespace engine;
@@ -75,7 +76,9 @@ auto main() -> int
 {
   EGE_INFO("=== ECS Educational Demo ===");
 
-  ApplicationManager app;
+  EngineConfig::getInstance().intialize();
+
+  ApplicationManager app(&EngineConfig::getInstance());
   auto demo = std::make_shared<ECSDemo>();
 
   // Setup callbacks

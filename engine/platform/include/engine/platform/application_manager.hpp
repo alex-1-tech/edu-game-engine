@@ -16,7 +16,7 @@ EGE_NAMESPACE_BEGIN
 class ApplicationManager
 {
 public:
-  ApplicationManager();
+  ApplicationManager(EngineConfig* m_config);
   ~ApplicationManager();
 
   ApplicationManager(const ApplicationManager&) = delete;
@@ -78,9 +78,9 @@ private:
   void runMainLoop();               ///< Internal main loop implementation
   void processFrame(f64 deltaTime); ///< Process a single frame (update, render)
 
-  EngineConfig* m_config;        ///< Engine configuration settings
-  Unique<SDLWindow> m_window;    ///< Main application window
-  bool m_running = false;        ///< Application running flag
+  EngineConfig* m_config;     ///< Engine configuration settings
+  Unique<SDLWindow> m_window; ///< Main application window
+  bool m_running = false;     ///< Application running flag
 
   std::function<void(f64 deltaTime)> m_onUpdate; ///< User-defined update callback
   std::function<void()> m_onRender;              ///< User-defined render callback

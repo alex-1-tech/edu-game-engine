@@ -19,6 +19,8 @@ add_library(EduGameEngineCore STATIC
     src/logging.cpp
     src/time.cpp
     src/config.cpp
+    src/config_loader.cpp
+    src/config_default.cpp
 )
 
 # -------------------------
