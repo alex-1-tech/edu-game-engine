@@ -7,6 +7,8 @@
  * @date    2026
  */
 
+#include <xcb/xproto.h>
+
 #include <unordered_map>
 #include <variant>
 
@@ -62,14 +64,24 @@ public:
     return instance;
   }
 
-  /** @brief Loads configuration from file using the provided loader*/
-  auto loadFromFile(const IConfigLoader& loader, const String& path) -> bool;
-
   /** @brief Core initialization of the config system */
   void intialize();
 
   /** @brief Reverts all settings to their predefined default values */
   void setUpDefaultSettings();
+
+  /** @brief Check if the property in map */
+  auto hasProperty(Property property) const -> bool { return (m_values.find(property) != m_values.end()); };
+
+  /** @brief Returns true if type of property and template is same */
+  template<typename T> auto isPropertyType(Property property) const -> bool
+  {
+    auto iterator = m_values.find(property);
+    return (hasProperty(property) && std::holds_alternative<T>(property));
+  }
+
+  /** @brief Loads configuration from file using the provided loader*/
+  auto loadFromFile(const IConfigLoader& loader, const String& path) -> bool;
 
   /** @brief Serializes and saves current settings to a file with provided loader*/
   [[nodiscard]] auto saveToFile(const IConfigLoader& loader, const String& path) const -> bool;
