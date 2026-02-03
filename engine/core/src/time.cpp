@@ -1,5 +1,7 @@
 #include "engine/core/time.hpp"
 
+#include <algorithm>
+
 EGE_NAMESPACE_BEGIN
 
 
@@ -11,6 +13,7 @@ f64 Time::s_time = ZERO_F;
 f64 Time::s_time_scale = ONE_F; // 1.0 = realtime
 u64 Time::s_frame_count = 0;
 f64 Time::s_accumulator = 0;
+const f64 MAX_DELTA = 0.25;
 
 void Time::init()
 {
@@ -26,7 +29,8 @@ void Time::update()
   getCurrentFrameTime() = Clock::now();
 
   // Calculate delta time in seconds (duration cast to double)
-  const f64 realDeltaTime = std::chrono::duration<f64>(getCurrentFrameTime() - getLastFrameTime()).count();
+  f64 realDeltaTime = std::chrono::duration<f64>(getCurrentFrameTime() - getLastFrameTime()).count();
+  realDeltaTime = std::min(realDeltaTime, MAX_DELTA);
 
   // Accumulate unscaled time
   s_unscaled_delta_time = realDeltaTime;

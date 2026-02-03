@@ -24,11 +24,14 @@ using Mat4 = glm::mat4; ///< 4x4 matrix
 using Quat = glm::quat; ///< Quaternion
 
 // Math constants
-constexpr f32 PI_VALUE = 3.14159265358979323846F;  ///< π constant
-constexpr f32 PI_HALF = 1.57079632679489661923F;   ///< π/2 constant
-constexpr f32 TAU_VALUE = 6.28318530717958647692F; ///< 2π constant
-constexpr f32 DEG_TO_RAD = PI_VALUE / 180.0F;      ///< Degrees to radians conversion factor
-constexpr f32 RAD_TO_DEG = 180.0F / PI_VALUE;      ///< Radians to degrees conversion factor
+namespace constants
+{
+inline constexpr f32 PI_VALUE = 3.14159265358979323846F;  ///< π constant
+inline constexpr f32 PI_HALF = 1.57079632679489661923F;   ///< π/2 constant
+inline constexpr f32 TAU_VALUE = 6.28318530717958647692F; ///< 2π constant
+inline constexpr f32 DEG_TO_RAD = PI_VALUE / 180.0F;      ///< Degrees to radians conversion factor
+inline constexpr f32 RAD_TO_DEG = 180.0F / PI_VALUE;      ///< Radians to degrees conversion factor
+} // namespace constants
 
 /// @brief Basic math utility functions
 namespace math
@@ -96,7 +99,7 @@ template<typename T> constexpr auto max(T value_a, T value_b) -> T
  */
 inline auto radians(f32 degrees) -> f32
 {
-  return degrees * DEG_TO_RAD;
+  return degrees * constants::DEG_TO_RAD;
 }
 
 /**
@@ -106,7 +109,7 @@ inline auto radians(f32 degrees) -> f32
  */
 inline auto degrees(f32 radians) -> f32
 {
-  return radians * RAD_TO_DEG;
+  return radians * constants::RAD_TO_DEG;
 }
 
 // Smoothstep constants
