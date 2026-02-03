@@ -43,15 +43,9 @@ public:
   [[nodiscard]] auto getTypeIndex() const -> std::type_index override { return typeid(T); }
   [[nodiscard]] auto getTypeName() const -> const char* override { return typeid(T).name(); }
 
-  [[nodiscard]] auto clone() const -> Unique<IComponent> override
-  {
-    return std::make_unique<T>(static_cast<const T&>(*this));
-  }
+  [[nodiscard]] auto clone() const -> Unique<IComponent> override { return std::make_unique<T>(static_cast<const T&>(*this)); }
 
-  [[nodiscard]] auto toString() const -> String override
-  {
-    return fmt::format("Component[{}]", getTypeName());
-  }
+  [[nodiscard]] auto toString() const -> String override { return fmt::format("Component[{}]", getTypeName()); }
 
   [[nodiscard]] auto explain() const -> String override
   {

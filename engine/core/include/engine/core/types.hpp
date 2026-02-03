@@ -9,6 +9,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <filesystem>
 #include <functional>
 #include <memory>
 #include <string>
@@ -111,11 +112,14 @@ using SystemId = u32;        ///< System identifier type
 /// @{
 static constexpr f32 ZERO_F = 0.0F;           ///< Zero as 32-bit float
 static constexpr f32 ONE_F = 1.0F;            ///< One as 32-bit float
-static constexpr u32 ONE = 1.0;               ///< One as 32-bit unsigned integer
-static constexpr u32 ZERO = 1.0;              ///< Zero as 32-bit unsigned integer
+static constexpr f32 HALF_F = 0.5F;           ///< Half as 32-bit float
+static constexpr i32 DOUBLE = 2;              ///< Double as 32-bit signed integer
+static constexpr u32 ONE = 1U;                ///< One as 32-bit unsigned integer
+static constexpr u32 ZERO = 0U;               ///< Zero as 32-bit unsigned integer
 constexpr f64 EPSILON = 0.0001;               ///< Tolerance for floating-point comparisons
 constexpr f64 DEFAULT_FIXED_FPS = 120.0;      ///< Default fixed update rate (frames per second)
 static constexpr u32 ENABLE_EXTRA_CHECKS = 1; ///< Flag to enable additional runtime validation
+static constexpr i32 IVALID_INDEX = -1;       ///<
 /// }@
 
 /// Time
@@ -126,5 +130,8 @@ static constexpr f64 MILLISECONDS_PER_SECOND = 1000.0;
 ///< Maximum fixed updates per frame to prevent spiral of death
 static constexpr u32 MAX_FIXED_UPDATES_PER_FRAME = 5;
 /// }@
+
+/// Path
+using Path = std::filesystem::path;
 
 EGE_NAMESPACE_END

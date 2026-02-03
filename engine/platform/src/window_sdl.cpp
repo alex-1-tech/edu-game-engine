@@ -15,16 +15,11 @@ SDLWindow::SDLWindow(const String& title, u32 width, u32 height)
     , m_height(height)
     , m_should_close(false)
 {
-  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-    std::cerr << "SDL Init Error: " << SDL_GetError() << '\n';
-    return;
-  }
-
   const auto window_width = static_cast<int>(width);
   const auto window_height = static_cast<int>(height);
 
-  m_window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window_width,
-                              window_height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+  m_window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window_width, window_height,
+                              SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
   if (m_window == nullptr) {
     std::cerr << "Window Creation Error: " << SDL_GetError() << '\n';
@@ -39,7 +34,6 @@ SDLWindow::~SDLWindow()
   if (m_window != nullptr) {
     SDL_DestroyWindow(m_window);
   }
-  SDL_Quit();
   EGE_DEBUG("Window destroyed");
 }
 

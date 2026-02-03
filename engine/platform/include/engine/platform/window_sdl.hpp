@@ -41,6 +41,9 @@ public:
   [[nodiscard]] auto getHeight() const -> u32 override { return m_height; }
   [[nodiscard]] auto shouldClose() const -> bool override { return m_should_close; }
 
+  [[nodiscard]] auto getSDLWindow() const -> SDL_Window* { return m_window; }
+  [[nodiscard]] auto getSDLRenderer() const -> SDL_Renderer* { return m_renderer; }
+
   /**
    * @brief Set the event callback function
    * @param callback Function to call when events occur
@@ -48,11 +51,12 @@ public:
   void setEventCallback(const EventCallbackFn& callback) override { m_event_callback = callback; }
 
 private:
-  SDL_Window* m_window = nullptr;   ///< SDL window handle
-  u32 m_width;                      ///< Current window width
-  u32 m_height;                     ///< Current window height
-  bool m_should_close;              ///< Window close flag
-  EventCallbackFn m_event_callback; ///< Event callback function
+  SDL_Window* m_window = nullptr;     ///< SDL window handle
+  SDL_Renderer* m_renderer = nullptr; ///< Render handle
+  u32 m_width;                        ///< Current window width
+  u32 m_height;                       ///< Current window height
+  bool m_should_close;                ///< Window close flag
+  EventCallbackFn m_event_callback;   ///< Event callback function
 
   /**
    * @brief Handle SDL event and convert to engine event

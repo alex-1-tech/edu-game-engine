@@ -27,23 +27,6 @@
 #warning "Unknown compiler"
 #endif
 
-// Debug macros
-#if !defined(NDEBUG) || defined(EGE_DEBUG)
-#define EGE_DEBUG_MODE 1 ///< Debug mode is active
-#include <cassert>
-/// @brief Assertion macro with logging
-#define EGE_ASSERT(expr, ...)                                                                                \
-  do {                                                                                                       \
-    if (!(expr)) {                                                                                           \
-      engine::log_fatal("Assertion failed: {} ({})", #expr, __VA_ARGS__);                                    \
-      assert(expr);                                                                                          \
-    }                                                                                                        \
-  } while (0)
-#else
-#define EGE_DEBUG_MODE 0                ///< Debug mode is inactive
-#define EGE_ASSERT(expr, ...) ((void)0) ///< No-op in release builds
-#endif
-
 // Inline macros
 #if defined(EGE_COMPILER_MSVC)
 #define EGE_FORCE_INLINE __forceinline ///< Force inlining (MSVC)
@@ -65,7 +48,7 @@
 #endif
 
 // Namespace shortcuts
-#define EGE_NAMESPACE_BEGIN                                                                                  \
-  namespace engine                                                                                           \
+#define EGE_NAMESPACE_BEGIN                                                                                                                \
+  namespace engine                                                                                                                         \
   {                         ///< Begin engine namespace
 #define EGE_NAMESPACE_END } ///< End engine namespace
