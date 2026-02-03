@@ -25,11 +25,12 @@ target_link_libraries(EduGameEngineGraphics
     PUBLIC
     EduGameEngine::Core
     EduGameEngine::Platform
+    EduGameEngine::Assets 
     SDL2::SDL2
-    SDL2_image::SDL2_image 
+    SDL2_image::SDL2_image
 )
 
 target_compile_definitions(EduGameEngineGraphics
     PUBLIC
-        $<$<PLATFORM_ID:Windows>:SDL_MAIN_HANDLED>
+    $<$<PLATFORM_ID:Windows>:SDL_MAIN_HANDLED>
 )
