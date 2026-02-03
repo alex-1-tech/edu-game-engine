@@ -2,6 +2,7 @@
 
 #include "engine/core/logging.hpp"
 #include "engine/core/time.hpp"
+#include "engine/core/types.hpp"
 #include "engine/platform/window_sdl.hpp"
 
 EGE_NAMESPACE_BEGIN
@@ -9,8 +10,7 @@ EGE_NAMESPACE_BEGIN
 ApplicationManager::ApplicationManager()
     : m_config(std::make_unique<EngineConfig>())
 {
-  EGE_DEBUG("ApplicationManager created: {} ({}x{})", m_config->windowTitle, m_config->windowWidth,
-            m_config->windowHeight);
+  EGE_DEBUG("ApplicationManager created: {} ({}x{})", m_config->windowTitle, m_config->windowWidth, m_config->windowHeight);
 }
 
 ApplicationManager::~ApplicationManager()
@@ -21,8 +21,12 @@ ApplicationManager::~ApplicationManager()
 auto ApplicationManager::initialize() -> bool
 {
   EGE_INFO("Initializing application...");
-  m_window =
-      std::make_unique<SDLWindow>(m_config->windowTitle, m_config->windowWidth, m_config->windowHeight);
+
+  m_window = std::make_unique<SDLWindow>(m_config->windowTitle, m_config->windowWidth, m_config->windowHeight);
+  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    EGE_ERROR("SDL Init Error: {}", SDL_GetError());
+    return false;
+  }
 
   Time::init();
 
@@ -37,6 +41,7 @@ void ApplicationManager::shutdown()
   }
 
   EGE_INFO("Shutting down application...");
+  SDL_Quit();
   m_running = false;
   m_window.reset();
   EGE_INFO("Application shutdown complete");
@@ -83,7 +88,11 @@ void ApplicationManager::runMainLoop()
   }
 
   // ===== FRAME RATE LIMIT =====
-  const f64 target = 1.0 / m_config->targetFPS;
+  f64 target = ONE_F / DEFAULT_FIXED_FPS;
+  if (m_config->targetFPS > 0) {
+    target = ONE_F / static_cast<f64>(m_config->targetFPS);
+  }
+
   const f64 frameTime = Time::Duration(Time::Clock::now() - start).count();
 
   if (frameTime < target) {
@@ -138,9 +147,8 @@ void ApplicationManager::printStats() const
                              "├─ Avg Frame Time: {:.2f}ms\n"
                              "├─ Total Fixed Updates: {}\n"
                              "└─ Window: {} ({}x{})\n",
-                             m_stats.totalRunTime, Time::frameCount(), m_stats.fps,
-                             m_stats.avgFrameTime * MILLISECONDS_PER_SECOND, m_stats.totalFixedUpdates,
-                             m_config->windowTitle, m_config->windowWidth, m_config->windowHeight);
+                             m_stats.totalRunTime, Time::frameCount(), m_stats.fps, m_stats.avgFrameTime * MILLISECONDS_PER_SECOND,
+                             m_stats.totalFixedUpdates, m_config->windowTitle, m_config->windowWidth, m_config->windowHeight);
 
   EGE_INFO("{}", stats);
 }
