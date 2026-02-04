@@ -7,7 +7,7 @@
  * @date    2026
  */
 
-#include "engine/core/config/config.hpp"
+#include "engine/core/config.hpp"
 #include "engine/core/types.hpp"
 #include "engine/platform/window_sdl.hpp"
 

@@ -1,7 +1,7 @@
 #pragma once
 
 /**
- * @file    engine_properties.hpp
+ * @file    config/config_types.hpp
  * @brief   Defines engine configuration properties, their types, and constraints 🛠️
  * @author  jhfawk
  * @date    2026

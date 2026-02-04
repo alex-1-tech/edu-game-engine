@@ -1,6 +1,6 @@
 #include "engine/platform/application_manager.hpp"
 
-#include "engine/core/config/config.hpp"
+#include "engine/core/config.hpp"
 #include "engine/core/config/config_loader.hpp"
 #include "engine/core/config/config_types.hpp"
 #include "engine/core/logging.hpp"

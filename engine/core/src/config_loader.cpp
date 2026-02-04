@@ -5,7 +5,7 @@
 #include <optional>
 
 #include "engine/core/base.hpp"
-#include "engine/core/config/config.hpp"
+#include "engine/core/config.hpp"
 #include "engine/core/config/config_types.hpp"
 #include "engine/core/logging.hpp"
 #include "engine/core/types.hpp"

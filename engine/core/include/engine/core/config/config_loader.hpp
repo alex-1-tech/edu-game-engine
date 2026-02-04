@@ -1,7 +1,7 @@
 #pragma once
 
 /**
- * @file    config_loader.hpp
+ * @file    config/config_loader.hpp
  * @brief   Interface and implementation of the engine configuration loader in JSON format.
  * @author  jhfawk
  * @date    2026

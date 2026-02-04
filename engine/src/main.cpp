@@ -10,7 +10,7 @@
 #include <engine/graphics/sdl_renderer.hpp>
 #include <engine/platform/application_manager.hpp>
 
-#include "engine/core/config/config.hpp"
+#include "engine/core/config.hpp"
 #include "engine/core/types.hpp"
 
 using namespace engine;

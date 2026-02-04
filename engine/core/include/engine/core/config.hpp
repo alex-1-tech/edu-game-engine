@@ -1,7 +1,7 @@
 #pragma once
 
 /**
- * @file    engine_config.hpp
+ * @file    config.hpp
  * @brief   Core configuration management system (Singleton)
  * @author  jhfawk
  * @date    2026
@@ -159,10 +159,10 @@ template<typename T> [[nodiscard]] auto EngineConfig::getProperty(Property confi
     if (std::holds_alternative<T>(iterator->second)) {
       return std::get<T>(iterator->second);
     }
-    EGE_ERROR("EGE::Config: Type mismatch for property requested!");
+    EGE_ERROR("Type mismatch for property requested!");
     return T{};
   }
-  EGE_ERROR("EGE::Config: Attempted to get an unregistered property!");
+  EGE_ERROR("Attempted to get an unregistered property!");
   return T{};
 }
 
@@ -176,7 +176,7 @@ template<typename T> void EngineConfig::setProperty(Property configProperty, T v
   auto defaultSettingsIterator = defaultSettingsMap.find(configProperty);
 
   if (defaultSettingsIterator == defaultSettingsMap.end()) {
-    EGE_ERROR("EGE::Config: Cannot set value for unknown property!");
+    EGE_ERROR("Cannot set value for unknown property!");
     return;
   }
 
@@ -185,7 +185,7 @@ template<typename T> void EngineConfig::setProperty(Property configProperty, T v
   if (Validate::range(value, info.min, info.max)) {
     m_values[configProperty] = std::move(value);
   } else {
-    EGE_WARN("EGE::Config: Validation failed - value is out of bounds!");
+    EGE_WARN("Validation for property failed - value is out of bounds!");
   }
 }
 
