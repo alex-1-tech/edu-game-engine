@@ -10,6 +10,7 @@
 #include <engine/graphics/sdl_renderer.hpp>
 #include <engine/platform/application_manager.hpp>
 
+#include "engine/core/config.hpp"
 #include "engine/core/types.hpp"
 
 using namespace engine;
@@ -77,7 +78,7 @@ private:
   {
     EGE_INFO("Setting up ECS Graphics Demo...");
 
-    ApplicationManager app;
+    ApplicationManager app(&EngineConfig::getInstance());
     if (auto* window = app.getWindow()) {
       m_renderer = std::make_unique<SDLRenderer>(window);
       if (!m_renderer->isValid()) {
@@ -186,7 +187,9 @@ auto main() -> int
 {
   EGE_INFO("=== ECS Graphics Educational Demo ===");
 
-  ApplicationManager app;
+  EngineConfig::getInstance().intialize();
+
+  ApplicationManager app(&EngineConfig::getInstance());
   auto demo = std::make_shared<ECSGraphicsDemo>();
 
   app.setUpdateCallback([&demo](float deltaTime) { demo->update(deltaTime); });

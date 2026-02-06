@@ -1,5 +1,8 @@
 #include "engine/platform/application_manager.hpp"
 
+#include "engine/core/config.hpp"
+#include "engine/core/config/config_loader.hpp"
+#include "engine/core/config/config_types.hpp"
 #include "engine/core/logging.hpp"
 #include "engine/core/time.hpp"
 #include "engine/core/types.hpp"
@@ -7,10 +10,11 @@
 
 EGE_NAMESPACE_BEGIN
 
-ApplicationManager::ApplicationManager()
-    : m_config(std::make_unique<EngineConfig>())
+ApplicationManager::ApplicationManager(EngineConfig* m_config)
+    : m_config(m_config)
 {
-  EGE_DEBUG("ApplicationManager created: {} ({}x{})", m_config->windowTitle, m_config->windowWidth, m_config->windowHeight);
+  EGE_DEBUG("ApplicationManager created: {} ({}x{})", m_config->getProperty<String>(Property::WINDOW_TITLE),
+            m_config->getProperty<u32>(Property::WINDOW_WIDTH), m_config->getProperty<u32>(Property::WINDOW_HEIGHT));
 }
 
 ApplicationManager::~ApplicationManager()
@@ -20,17 +24,28 @@ ApplicationManager::~ApplicationManager()
 
 auto ApplicationManager::initialize() -> bool
 {
-  EGE_INFO("Initializing application...");
+  Logger::setLevel(m_config->getProperty<LogLevel>(Property::LOGLEVEL));
 
-  m_window = std::make_unique<SDLWindow>(m_config->windowTitle, m_config->windowWidth, m_config->windowHeight);
+  EGE_INFO("Initializing application...");
+  m_window =
+      std::make_unique<SDLWindow>(m_config->getProperty<String>(Property::WINDOW_TITLE), m_config->getProperty<u32>(Property::WINDOW_WIDTH),
+                                  m_config->getProperty<u32>(Property::WINDOW_HEIGHT));
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     EGE_ERROR("SDL Init Error: {}", SDL_GetError());
     return false;
   }
-
   Time::init();
 
   m_running = true;
+
+  // Trying to save new confing [DEBUG PURPOSE ONLY]/////////////////////////////////
+  m_config->setProperty<LogLevel>(Property::LOGLEVEL, LogLevel::WARNING);
+  m_config->setProperty<String>(Property::WINDOW_TITLE, String("NEW TITLE"));
+  u32 const new_size = 1234;
+  m_config->setProperty<u32>(Property::WINDOW_WIDTH, new_size);
+  bool result = m_config->saveToFile(JSONConfigLoader{}, ConfigDefaults::PATH_TO_CONFIG);
+  ///////////////////////////////////////////////////////////////////////////////////
+
   return true;
 }
 
@@ -88,12 +103,11 @@ void ApplicationManager::runMainLoop()
   }
 
   // ===== FRAME RATE LIMIT =====
-  f64 target = ONE_F / DEFAULT_FIXED_FPS;
-  if (m_config->targetFPS > 0) {
-    target = ONE_F / static_cast<f64>(m_config->targetFPS);
-  }
-
   const f64 frameTime = Time::Duration(Time::Clock::now() - start).count();
+  f64 target = ONE_F / DEFAULT_FIXED_FPS;
+  if (m_config->getProperty<u32>(Property::TARGET_FPS) > 0) {
+    target = ONE_F / static_cast<f64>(m_config->getProperty<u32>(Property::TARGET_FPS));
+  }
 
   if (frameTime < target) {
     SDL_Delay(static_cast<u32>((target - frameTime) * MILLISECONDS_PER_SECOND));
@@ -148,7 +162,8 @@ void ApplicationManager::printStats() const
                              "├─ Total Fixed Updates: {}\n"
                              "└─ Window: {} ({}x{})\n",
                              m_stats.totalRunTime, Time::frameCount(), m_stats.fps, m_stats.avgFrameTime * MILLISECONDS_PER_SECOND,
-                             m_stats.totalFixedUpdates, m_config->windowTitle, m_config->windowWidth, m_config->windowHeight);
+                             m_stats.totalFixedUpdates, m_config->getProperty<String>(Property::WINDOW_TITLE),
+                             m_config->getProperty<u32>(Property::WINDOW_WIDTH), m_config->getProperty<u32>(Property::WINDOW_HEIGHT));
 
   EGE_INFO("{}", stats);
 }

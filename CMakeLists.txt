@@ -40,6 +40,15 @@ FetchContent_Declare(
 )
 
 # -------------------------
+# Fetch lohmann/json
+# -------------------------
+
+FetchContent_Declare(
+    json
+    GIT_REPOSITORY https://github.com/nlohmann/json
+    GIT_TAG v3.12.0 
+)
+
 # Fetch SDL2_image
 # -------------------------
 
@@ -52,7 +61,7 @@ FetchContent_Declare(
 
 
 
-FetchContent_MakeAvailable(SDL2 glm SDL2_image)
+FetchContent_MakeAvailable(SDL2 json glm SDL2_image)
 
 
 # -------------------------
@@ -61,6 +70,13 @@ FetchContent_MakeAvailable(SDL2 glm SDL2_image)
 add_library(engine_glm INTERFACE)
 target_include_directories(engine_glm INTERFACE ${glm_SOURCE_DIR})
 target_compile_definitions(engine_glm INTERFACE GLM_ENABLE_EXPERIMENTAL)
+
+# -------------------------
+# JSON interface target
+# -------------------------
+add_library(engine_json INTERFACE)
+target_include_directories(engine_json INTERFACE ${json_SOURCE_DIR}/single_include)
+
 
 
 add_subdirectory(engine)

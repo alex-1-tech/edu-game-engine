@@ -10,8 +10,10 @@
 #include <fmt/core.h>
 #include <fmt/format.h>
 
+#include <cassert>
 #include <fstream>
 #include <mutex>
+#include <optional>
 
 #include "base.hpp"
 #include "types.hpp"
@@ -66,6 +68,12 @@ public:
    */
   static void enableFileOutput(bool enable);
 
+  static auto getStringToLevel() -> const std::unordered_map<String, LogLevel>&;
+
+  static auto stringToLogLevel(const String&) -> std::optional<LogLevel>;
+
+  static auto logLevelToString(const LogLevel&) -> std::optional<String>;
+
 private:
   /**
    * @brief Get the file stream instance
@@ -108,7 +116,7 @@ private:
 // Debug macros
 #if !defined(NDEBUG) || defined(EGE_DEBUG)
 #define EGE_DEBUG_MODE 1 ///< Debug mode is active
-#include <cassert>
+
 /// @brief Assertion macro with logging
 #define EGE_ASSERT(expr, ...)                                                                                                              \
   do {                                                                                                                                     \

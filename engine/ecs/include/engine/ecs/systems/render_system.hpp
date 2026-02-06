@@ -43,8 +43,8 @@ protected:
       return;
     }
 
-    Shape* shape = world.getComponent<Shape>(entity);
-    Sprite* sprite = world.getComponent<Sprite>(entity);
+    auto* shape = world.getComponent<Shape>(entity);
+    auto* sprite = world.getComponent<Sprite>(entity);
     Text* text = world.getComponent<Text>(entity);
 
     m_renderer->pushState();
