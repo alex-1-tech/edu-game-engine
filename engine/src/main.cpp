@@ -95,18 +95,14 @@ private:
                                      Vec2(GameConstants::PLAYER_SCALE, GameConstants::PLAYER_SCALE));
     m_world->addComponent<Velocity>(player, Vec2(GameConstants::PLAYER_VEL_X, 0.0F));
 
-    Shape playerShape;
-    playerShape.type = Shape::Type::RECTANGLE;
-    playerShape.color = Color::red();
-    playerShape.filled = true;
-    playerShape.size = Vec2(GameConstants::PLAYER_SIZE, GameConstants::PLAYER_SIZE);
+    auto playerShape = Shape::createRectangle(Vec2(GameConstants::PLAYER_SIZE, GameConstants::PLAYER_SIZE), Color::red(), true);
     m_world->addComponent<Shape>(player, playerShape);
 
     Text playerText;
-    playerText.content = "Player";
-    playerText.color = Color::white();
-    playerText.fontSize = GameConstants::PLAYER_TEXT_SIZE;
-    playerText.offset = Vec2(0.0F, GameConstants::PLAYER_TEXT_OFFSET);
+    playerText.setContent("Player");
+    playerText.setColor(Color::white());
+    playerText.setFontSize(GameConstants::PLAYER_TEXT_SIZE);
+    playerText.setOffset(Vec2(0.0F, GameConstants::PLAYER_TEXT_OFFSET));
     m_world->addComponent<Text>(player, playerText);
 
     Entity enemy = m_world->createEntity();
@@ -114,30 +110,22 @@ private:
     m_world->addComponent<Transform>(enemy, Vec2(GameConstants::ENEMY_POS_X, GameConstants::ENEMY_POS_Y));
     m_world->addComponent<Velocity>(enemy, Vec2(0.0F, GameConstants::ENEMY_VEL_Y));
 
-    Shape enemyShape;
-    enemyShape.type = Shape::Type::CIRCLE;
-    enemyShape.color = Color::green();
-    enemyShape.filled = true;
-    enemyShape.radius = GameConstants::ENEMY_RADIUS;
+    auto enemyShape = Shape::createCircle(GameConstants::ENEMY_RADIUS, Color::green(), true);
     m_world->addComponent<Shape>(enemy, enemyShape);
 
     Text enemyText;
-    enemyText.content = "Enemy";
-    enemyText.color = Color::white();
-    enemyText.fontSize = GameConstants::ENEMY_TEXT_SIZE;
-    enemyText.offset = Vec2(0.0F, GameConstants::ENEMY_TEXT_OFFSET);
+    enemyText.setContent("Enemy");
+    enemyText.setColor(Color::white());
+    enemyText.setFontSize(GameConstants::ENEMY_TEXT_SIZE);
+    enemyText.setOffset(Vec2(0.0F, GameConstants::ENEMY_TEXT_OFFSET));
     m_world->addComponent<Text>(enemy, enemyText);
 
     Entity obstacle = m_world->createEntity();
     m_world->addComponent<Name>(obstacle, "Obstacle");
     m_world->addComponent<Transform>(obstacle, Vec2(GameConstants::OBSTACLE_POS_X, GameConstants::OBSTACLE_POS_Y));
 
-    Shape obstacleShape;
-    obstacleShape.type = Shape::Type::RECTANGLE;
-    obstacleShape.color = Color::blue();
-    obstacleShape.filled = false;
-    obstacleShape.outlineThickness = GameConstants::OBSTACLE_OUTLINE;
-    obstacleShape.size = Vec2(GameConstants::OBSTACLE_SIZE, GameConstants::OBSTACLE_SIZE);
+    auto obstacleShape = Shape::createRectangle(Vec2(GameConstants::OBSTACLE_SIZE, GameConstants::OBSTACLE_SIZE), Color::blue(), false);
+    obstacleShape.setOutlineThickness(GameConstants::OBSTACLE_OUTLINE);
     m_world->addComponent<Shape>(obstacle, obstacleShape);
 
     Entity target = m_world->createEntity();
@@ -145,37 +133,25 @@ private:
     m_world->addComponent<Transform>(target, Vec2(GameConstants::TARGET_POS_X, GameConstants::TARGET_POS_Y));
     m_world->addComponent<Velocity>(target, Vec2(GameConstants::TARGET_VEL_X, 0.0F));
 
-    Shape targetShape;
-    targetShape.type = Shape::Type::LINE;
-    targetShape.color = Color::yellow();
-    targetShape.filled = false;
-    targetShape.endPoint = Vec2(GameConstants::TARGET_LINE_END_X, GameConstants::TARGET_LINE_END_Y);
+    auto targetShape = Shape::createLine(Vec2(GameConstants::TARGET_LINE_END_X, GameConstants::TARGET_LINE_END_Y), Color::yellow());
     m_world->addComponent<Shape>(target, targetShape);
 
     Text targetText;
-    targetText.content = "Target";
-    targetText.color = Color::yellow();
-    targetText.fontSize = GameConstants::TARGET_TEXT_SIZE;
-    targetText.offset = Vec2(GameConstants::TARGET_TEXT_OFFSET_X, GameConstants::TARGET_TEXT_OFFSET_Y);
+    targetText.setContent("Target");
+    targetText.setColor(Color::yellow());
+    targetText.setFontSize(GameConstants::TARGET_TEXT_SIZE);
+    targetText.setOffset(Vec2(GameConstants::TARGET_TEXT_OFFSET_X, GameConstants::TARGET_TEXT_OFFSET_Y));
     m_world->addComponent<Text>(target, targetText);
 
     Entity staticObj = m_world->createEntity();
     m_world->addComponent<Name>(staticObj, "Static");
     m_world->addComponent<Transform>(staticObj, Vec2(GameConstants::STATIC_POS_X, GameConstants::STATIC_POS_Y));
 
-    Shape staticRectShape;
-    staticRectShape.type = Shape::Type::RECTANGLE;
-    staticRectShape.color = Color::cyan();
-    staticRectShape.filled = true;
-    staticRectShape.size = Vec2(GameConstants::STATIC_RECT_W, GameConstants::STATIC_RECT_H);
+    auto staticRectShape = Shape::createRectangle(Vec2(GameConstants::STATIC_RECT_W, GameConstants::STATIC_RECT_H), Color::cyan(), true);
     m_world->addComponent<Shape>(staticObj, staticRectShape);
 
-    Shape staticCircleShape;
-    staticCircleShape.type = Shape::Type::CIRCLE;
-    staticCircleShape.color = Color::purple();
-    staticCircleShape.filled = false;
-    staticCircleShape.outlineThickness = GameConstants::STATIC_CIRCLE_OUTLINE;
-    staticCircleShape.radius = GameConstants::STATIC_CIRCLE_RADIUS;
+    auto staticCircleShape = Shape::createCircle(GameConstants::STATIC_CIRCLE_RADIUS, Color::purple(), false);
+    staticCircleShape.setOutlineThickness(GameConstants::STATIC_CIRCLE_OUTLINE);
     m_world->addComponent<Shape>(staticObj, staticCircleShape);
 
     EGE_INFO("Created {} entities with graphical components", m_world->getEntityCount());
