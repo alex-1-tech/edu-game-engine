@@ -88,6 +88,8 @@ struct Rect {
 
   [[nodiscard]] constexpr auto position() const -> Vec2 { return position_; }
   [[nodiscard]] constexpr auto size() const -> Vec2 { return size_; }
+  [[nodiscard]] constexpr auto width() const -> f32 { return size_.x; }
+  [[nodiscard]] constexpr auto height() const -> f32 { return size_.y; }
 
 private:
   Vec2 position_{ZERO_F, ZERO_F};

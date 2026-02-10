@@ -53,7 +53,7 @@ protected:
       drawShape(transform, *shape);
     }
 
-    if ((sprite != nullptr) && (sprite->textureId != nullptr)) {
+    if ((sprite != nullptr) && ((sprite->textureId()) != nullptr)) {
       drawSprite(transform, *sprite);
     }
 
@@ -76,30 +76,30 @@ private:
     (void)rotation;
     (void)scale;
 
-    switch (shape.type) {
-      case Shape::Type::RECTANGLE: {
-        Rect rect(position - (shape.size * HALF_F), shape.size);
-        if (shape.filled) {
-          m_renderer->drawRect(rect, shape.color);
+    switch (shape.type()) {
+      case ShapeData::Type::RECTANGLE: {
+        Rect rect(position - (shape.size() * HALF_F), shape.size());
+        if (shape.filled()) {
+          m_renderer->drawRect(rect, shape.color());
         } else {
-          m_renderer->drawRectOutline(rect, shape.color, shape.outlineThickness);
+          m_renderer->drawRectOutline(rect, shape.color(), shape.outlineThickness());
         }
         break;
       }
 
-      case Shape::Type::CIRCLE: {
-        Circle circle(position, shape.radius);
-        if (shape.filled) {
-          m_renderer->drawCircle(circle, shape.color);
+      case ShapeData::Type::CIRCLE: {
+        Circle circle(position, shape.radius());
+        if (shape.filled()) {
+          m_renderer->drawCircle(circle, shape.color());
         } else {
-          m_renderer->drawCircleOutline(circle, shape.color, shape.outlineThickness);
+          m_renderer->drawCircleOutline(circle, shape.color(), shape.outlineThickness());
         }
         break;
       }
 
-      case Shape::Type::LINE: {
-        const Vec2 end = position + shape.endPoint;
-        m_renderer->drawLine(position, end, shape.color, shape.outlineThickness);
+      case ShapeData::Type::LINE: {
+        const Vec2 end = position + shape.endPoint();
+        m_renderer->drawLine(position, end, shape.color(), shape.outlineThickness());
         break;
       }
     }
@@ -109,18 +109,18 @@ private:
   {
     const Vec2 position = transform.position();
 
-    const Vec2 halfSize = sprite.size * 0.5F;
-    const Rect destRect(position - halfSize, sprite.size);
+    const Vec2 halfSize = sprite.size() * 0.5F;
+    const Rect destRect(position - halfSize, sprite.size());
 
-    m_renderer->drawTexture(sprite.textureId, sprite.uvRect, destRect, sprite.tint);
+    m_renderer->drawTexture(sprite.textureId(), sprite.uvRect(), destRect, sprite.tint());
   }
 
   void drawText(const Transform& transform, const Text& text)
   {
-    const Vec2 textPos = transform.position() + text.offset;
+    const Vec2 textPos = transform.position() + text.offset();
 
     const f32 pointSize = 3.0F;
-    m_renderer->drawPoint(textPos, text.color, pointSize);
+    m_renderer->drawPoint(textPos, text.color(), pointSize);
   }
 };
 

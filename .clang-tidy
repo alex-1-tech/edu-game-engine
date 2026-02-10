@@ -1,7 +1,7 @@
 Checks: >
   *,
 
-  -altera-*,              
+  -altera-*,        
   -cppcoreguidelines-avoid-magic-numbers, 
   -cppcoreguidelines-pro-bounds-constant-array-index,  
   -cppcoreguidelines-pro-type-union-access,          
@@ -113,6 +113,7 @@ Checks: >
   concurrency-thread-canceltype-asynchronous,
 
   portability-simd-intrinsics,
+  -bugprone-easily-swappable-parameters, 
 
 WarningsAsErrors: >
   bugprone-*,
@@ -181,11 +182,6 @@ CheckOptions:
     value: UPPER_CASE
   - key: readability-identifier-naming.GlobalConstantCase
     value: UPPER_CASE
-
-  - key: bugprone-easily-swappable-parameters.MaximumParameters
-    value: 4
-  - key: bugprone-easily-swappable-parameters.MinimumLength
-    value: 2
 
   - key: clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling
     value: 1

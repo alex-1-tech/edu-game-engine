@@ -6,6 +6,7 @@ add_subdirectory(platform)
 add_subdirectory(graphics)
 add_subdirectory(ecs)
 add_subdirectory(assets)
+add_subdirectory(physics)
 
 # -------------------------
 # Create the main executable for the engine demo
