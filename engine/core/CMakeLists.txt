@@ -18,6 +18,8 @@ FetchContent_MakeAvailable(fmt)
 add_library(EduGameEngineCore STATIC
     src/logging.cpp
     src/time.cpp
+    src/config.cpp
+    src/config_loader.cpp
 )
 
 # -------------------------
@@ -36,6 +38,13 @@ target_include_directories(EduGameEngineCore
 )
 
 # -------------------------
+# Adding a new macro for convenience
+# -------------------------
+target_compile_definitions(EduGameEngineCore PUBLIC 
+    PROJECT_ROOT="${CMAKE_SOURCE_DIR}"
+)
+
+# -------------------------
 # fmt::fmt - for string formatting in logging system
 # engine_glm - for math utilities (inherited from parent scope)
 # -------------------------
@@ -43,6 +52,7 @@ target_link_libraries(EduGameEngineCore
     PUBLIC
         fmt::fmt
         engine_glm
+        engine_json
 )
 
 # -------------------------

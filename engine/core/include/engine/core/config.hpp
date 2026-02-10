@@ -1,35 +1,192 @@
 #pragma once
 
+/**
+ * @file    config.hpp
+ * @brief   Core configuration management system (Singleton)
+ * @author  jhfawk
+ * @date    2026
+ */
+
+#include <xcb/xproto.h>
+
+#include <unordered_map>
+#include <variant>
+
+#include "engine/core/config/config_loader.hpp"
+#include "engine/core/config/config_types.hpp"
+#include "engine/core/logging.hpp"
 #include "engine/core/types.hpp"
 
 EGE_NAMESPACE_BEGIN
 
-struct EngineConfig {
-  // Window
-  String windowTitle = "EduGame Engine";
-  u32 windowWidth = 1280;
-  u32 windowHeight = 720;
-  bool windowFullscreen = false;
-  bool windowVSync = true;
+class IConfigLoader;
+class JSONConfigLoader;
+class ConfigDefaults;
 
-  // Graphics
-  u32 msaaSamples = 4;
-  f32 maxAnisotropy = 8.0F;
+/**
+ * @struct Validate
+ * @brief  Helper utility for value range and length verification
+ */
+struct Validate {
+public:
+  /** @brief Checks if a numeric value is within [min, max] range */
+  static auto range(u32 value, u32 min, u32 max) -> bool { return (min <= value && value <= max); }
 
-  // Performance
-  u32 targetFPS = 120;
-  bool capFPS = true;
+  /** @brief Checks if string length is within [min, max] range */
+  static auto range(const String& value, u32 minLength, u32 maxLength) -> bool
+  {
+    u32 length = static_cast<u32>(value.length());
+    return (minLength <= length && length <= maxLength);
+  }
 
-  // Debug
-  bool showDebugInfo = false;
-  bool enableValidationLayers = true;
+  /** @brief Validation for LogLevel (always valid) */
+  static auto range(LogLevel /*unused*/, u32 /*unused*/, u32 /*unused*/) -> bool { return true; }
+};
 
-  // Static instance
-  static auto getDefault() -> const EngineConfig&
+/**
+ * @class EngineConfig
+ * @brief Thread-safe Singleton managing all engine settings and their data storage
+ */
+class EngineConfig final
+{
+public:
+  ~EngineConfig() = default;
+
+  EngineConfig(EngineConfig&) = delete;
+  EngineConfig(EngineConfig&&) = delete;
+  auto operator=(EngineConfig&) = delete;
+  auto operator=(EngineConfig&&) = delete;
+
+  /** @brief Returns the global instance of the configuration manager*/
+  static auto getInstance() -> EngineConfig&
   {
     static EngineConfig instance;
     return instance;
   }
+
+  /** @brief Core initialization of the config system */
+  void intialize();
+
+  /** @brief Reverts all settings to their predefined default values */
+  void setUpDefaultSettings();
+
+  /** @brief Check if the property in map */
+  auto hasProperty(Property property) const -> bool { return (m_values.find(property) != m_values.end()); };
+
+  /** @brief Returns true if type of property and template is same */
+  template<typename T> auto isPropertyType(Property property) const -> bool
+  {
+    auto iterator = m_values.find(property);
+    return (hasProperty(property) && std::holds_alternative<T>(property));
+  }
+
+  /** @brief Loads configuration from file using the provided loader*/
+  auto loadFromFile(const IConfigLoader& loader, const String& path) -> bool;
+
+  /** @brief Serializes and saves current settings to a file with provided loader*/
+  [[nodiscard]] auto saveToFile(const IConfigLoader& loader, const String& path) const -> bool;
+
+  /** @brief Retrieves a property value by its key (with type safety) */
+  template<typename T> [[nodiscard]] auto getProperty(Property configProperty) const -> T;
+
+  /** @brief Validates and updates a property value */
+  template<typename T> void setProperty(Property configProperty, T value);
+
+private:
+  EngineConfig() = default;
+  std::unordered_map<Property, ConfigValue> m_values;
 };
+
+/**
+ * @struct ConfigDefaults
+ * @brief  Hardcoded default values and metadata for engine properties
+ */
+struct ConfigDefaults {
+  // Window Settings
+  static constexpr u32 WIDTH = 1280;
+  static constexpr u32 MIN_WIDTH = 700;
+  static constexpr u32 MAX_WIDTH = 1920;
+
+  static constexpr u32 HEIGHT = 720;
+  static constexpr u32 MIN_HEIGHT = 480;
+  static constexpr u32 MAX_HEIGHT = 1080;
+
+  static constexpr bool FULLSCREEN = false;
+  static constexpr bool VSYNC = true;
+
+  static constexpr const char* TITLE = "EduGame Engine";
+  static constexpr u32 MIN_TITLE_LEN = 4;
+  static constexpr u32 MAX_TITLE_LEN = 30;
+
+  // Graphics Settings
+  static constexpr u32 MSAA = 4;
+  static constexpr f32 ANISOTROPY = 8.0F;
+
+  // Logging Settings
+  static constexpr LogLevel LOGLEVEL = LogLevel::INFO;
+
+  // Performance Settings
+  static constexpr u32 TARGET_FPS = 120;
+  static constexpr u32 MIN_TFPS = 30;
+  static constexpr u32 MAX_TFPS = 400;
+
+  static constexpr bool CAPFPS = true;
+
+  static constexpr const char* PATH_TO_CONFIG = PROJECT_ROOT "/settings.json";
+
+  /** @brief Returns a static map containing default values and validation rules */
+  static auto getDefaultSettingsMap() -> const std::unordered_map<Property, PropertyInfo>&
+  {
+    constexpr int UNUSED_VALUE = ZERO;
+    static const std::unordered_map<Property, PropertyInfo> map = {
+        {Property::WINDOW_WIDTH, {ConfigDefaults::WIDTH, ConfigDefaults::MIN_WIDTH, ConfigDefaults::MAX_WIDTH}},
+        {Property::WINDOW_HEIGHT, {ConfigDefaults::HEIGHT, ConfigDefaults::MIN_HEIGHT, ConfigDefaults::MAX_HEIGHT}},
+        {Property::WINDOW_TITLE, {String(ConfigDefaults::TITLE), ConfigDefaults::MIN_TITLE_LEN, ConfigDefaults::MAX_TITLE_LEN}},
+        {Property::LOGLEVEL, {ConfigDefaults::LOGLEVEL, UNUSED_VALUE, UNUSED_VALUE}},
+        {Property::TARGET_FPS, {ConfigDefaults::TARGET_FPS, ConfigDefaults::MIN_TFPS, ConfigDefaults::MAX_TFPS}}};
+    return map;
+  }
+};
+
+/**
+ * @brief  Template implementation for safe property access
+ * @throws Logs an error if property is missing or type is incorrect
+ */
+template<typename T> [[nodiscard]] auto EngineConfig::getProperty(Property configProperty) const -> T
+{
+  auto iterator = m_values.find(configProperty);
+  if (iterator != m_values.end()) {
+    if (std::holds_alternative<T>(iterator->second)) {
+      return std::get<T>(iterator->second);
+    }
+    EGE_ERROR("Type mismatch for property requested!");
+    return T{};
+  }
+  EGE_ERROR("Attempted to get an unregistered property!");
+  return T{};
+}
+
+/**
+ * @brief  Template implementation for property modification with range validation
+ * @note   Values failing validation will trigger a warning and won't be applied
+ */
+template<typename T> void EngineConfig::setProperty(Property configProperty, T value)
+{
+  const auto& defaultSettingsMap = ConfigDefaults::getDefaultSettingsMap();
+  auto defaultSettingsIterator = defaultSettingsMap.find(configProperty);
+
+  if (defaultSettingsIterator == defaultSettingsMap.end()) {
+    EGE_ERROR("Cannot set value for unknown property!");
+    return;
+  }
+
+  const auto& info = defaultSettingsIterator->second;
+
+  if (Validate::range(value, info.min, info.max)) {
+    m_values[configProperty] = std::move(value);
+  } else {
+    EGE_WARN("Validation for property failed - value is out of bounds!");
+  }
+}
 
 EGE_NAMESPACE_END
